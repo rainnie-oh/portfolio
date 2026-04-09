@@ -1,0 +1,194 @@
+/* Global Header Styles */
+header {
+  display: flex;
+  justify-content: space-between;
+  align-items: center;
+  padding-top: 12px;
+  padding-bottom: 12px;
+  transition: border-color .35s;
+  animation: fadeUp .5s var(--ease-out) .05s both;
+}
+
+.header-logo-link {
+  display: flex;
+  align-items: center;
+  transition: opacity .2s;
+}
+
+.header-logo-link:hover {
+  opacity: 0.7;
+}
+
+.logo-img {
+  height: 26px;
+  width: auto;
+  display: block;
+  transition: filter .35s;
+}
+
+[data-theme="dark"] .logo-img {
+  filter: invert(1) hue-rotate(180deg);
+}
+
+.header-right {
+  display: flex;
+  align-items: center;
+  gap: 32px;
+}
+
+nav {
+  display: flex;
+  gap: 28px;
+}
+
+nav a {
+  font-size: 13px;
+  font-weight: 500;
+  letter-spacing: .07em;
+  text-transform: uppercase;
+  color: var(--text-primary);
+  text-decoration: none;
+  padding-bottom: 2px;
+  border-bottom: 1px solid transparent;
+  transition: border-color .2s, color .2s, text-shadow .2s;
+}
+
+nav a:hover, nav a.active {
+  border-bottom-color: var(--accent);
+}
+
+[data-theme="dark"] nav a:hover {
+  text-shadow: 0 0 10px rgba(255, 255, 255, 0.35);
+  border-bottom-color: transparent;
+}
+
+.theme-btn {
+  background: none;
+  border: none;
+  padding: 4px;
+  cursor: pointer;
+  display: flex;
+  align-items: center;
+  justify-content: center;
+  color: var(--text-primary);
+  transition: color .2s, transform .2s;
+}
+
+.theme-btn:hover {
+  color: var(--text-secondary);
+  transform: scale(1.1);
+}
+
+.cat-icon {
+  height: 26px;
+  width: auto;
+  display: block;
+}
+
+/* Global Footer Styles */
+.global-footer {
+  border-top: 1px solid var(--border);
+  padding: 60px 0 40px;
+  margin-top: 80px;
+  transition: border-color 0.35s;
+}
+.footer-top {
+  margin-bottom: 24px;
+}
+.footer-connect {
+  font-size: clamp(24px, 3vw, 36px);
+  letter-spacing: -0.02em;
+  color: var(--text-primary);
+  text-decoration: none;
+  position: relative;
+  display: inline-block;
+  overflow: hidden;
+  padding: 4px 8px;
+  margin-left: -8px;
+  transition: color 0.3s cubic-bezier(0.76, 0, 0.24, 1);
+  z-index: 1;
+}
+.footer-connect::before {
+  content: "";
+  position: absolute;
+  top: 0; left: 0; width: 100%; height: 100%;
+  background: var(--text-primary);
+  transform: translateX(-101%);
+  transition: transform 0.3s cubic-bezier(0.76, 0, 0.24, 1);
+  z-index: -1;
+}
+.footer-connect:hover::before {
+  transform: translateX(0);
+}
+.footer-connect:hover {
+  color: var(--bg);
+}
+.footer-status-line {
+  display: inline-flex;
+  align-items: center;
+  gap: 10px;
+  font-size: 9px;
+  font-weight: 500;
+  color: var(--text-secondary);
+  letter-spacing: 0.05em;
+  text-transform: uppercase;
+  padding: 6px 14px;
+  border: 1px dotted var(--border);
+  border-radius: 999px;
+  margin-bottom: 4px;
+}
+.status-indicator {
+  display: flex;
+  align-items: center;
+  gap: 8px;
+}
+.pulse-dot {
+  width: 5px;
+  height: 5px;
+  border-radius: 50%;
+  background: var(--accent);
+  box-shadow: 0 0 6px var(--accent);
+  animation: pulse 2s infinite ease-in-out;
+}
+@keyframes pulse {
+  0% { opacity: 0.4; transform: scale(0.8); box-shadow: 0 0 4px var(--accent); }
+  50% { opacity: 1; transform: scale(1.2); box-shadow: 0 0 10px var(--accent); }
+  100% { opacity: 0.4; transform: scale(0.8); box-shadow: 0 0 4px var(--accent); }
+}
+.footer-bottom {
+  display: flex;
+  justify-content: space-between;
+  align-items: flex-end;
+  font-size: 13px;
+  font-weight: 500;
+  letter-spacing: 0.05em;
+  text-transform: uppercase;
+  color: var(--text-secondary);
+  flex-wrap: wrap;
+  gap: 20px;
+}
+.footer-bottom-left {
+  display: flex;
+  flex-direction: column;
+  gap: 10px;
+  align-items: flex-start;
+}
+.footer-links {
+  display: flex;
+  gap: 24px;
+  flex-wrap: wrap;
+}
+.footer-links a {
+  color: var(--text-secondary);
+  text-decoration: none;
+  transition: color 0.2s;
+}
+.footer-links a:hover {
+  color: var(--text-primary);
+}
+@media(max-width: 640px) {
+  .footer-bottom {
+    flex-direction: column;
+    align-items: flex-start;
+  }
+}

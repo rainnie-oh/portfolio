@@ -1,0 +1,127 @@
+<!DOCTYPE html>
+<html lang="en" data-theme="light">
+<head>
+  <meta charset="UTF-8">
+  <meta name="viewport" content="width=device-width, initial-scale=1.0">
+  <title>Ruini — Work</title>
+  <link href="https://fonts.googleapis.com/css2?family=IBM+Plex+Mono:ital,wght@0,400;0,500;0,600;1,400&display=swap" rel="stylesheet">
+  <link rel="stylesheet" href="../css/tokens.css">
+  <style>
+    *, *::before, *::after { box-sizing: border-box; margin: 0; padding: 0 }
+    html, body { height: 100% }
+    body { font-family: var(--font); background: var(--bg); background-image: radial-gradient(circle, var(--bg-dot) 1px, transparent 1px); background-size: 24px 24px; color: var(--text-primary); transition: background-color .35s, color .35s; -webkit-font-smoothing: antialiased; }
+    .page { max-width: 1440px; margin: 0 auto; padding: 40px 80px; display: flex; flex-direction: column; }
+    
+    .section-header { display: flex; align-items: baseline; gap: 8px; padding: 18px 0; border-top: none; border-bottom: 1px solid var(--border); border-left-color: transparent; border-right-color: transparent; transition: border-color .35s; }
+    .section-slash { font-size: 11px; font-weight: 400; color: var(--text-secondary); transition: color .35s; }
+    .section-label { font-size: 10px; font-weight: 500; letter-spacing: .14em; text-transform: uppercase; color: var(--text-secondary); transition: color .35s; }
+    .section-count { font-size: 11px; font-weight: 400; color: var(--text-secondary); opacity: .6; transition: color .35s; margin-left: 2px; }
+    .work-section { padding-bottom: 80px; margin-top: 60px; }
+    .project-item { border-top: 1px solid var(--border); padding: 28px 0; transition: border-color .35s; }
+    .project-item:last-child { border-bottom: 1px solid var(--border); }
+    .project-row-top { display: flex; align-items: baseline; justify-content: space-between; margin-bottom: 20px; }
+    .project-meta-left { display: flex; align-items: baseline; gap: 24px; }
+    .project-num { font-size: 11px; font-weight: 500; color: var(--text-secondary); letter-spacing: .06em; transition: color .35s; min-width: 20px; }
+    .project-name { font-size: clamp(22px, 2.6vw, 36px); font-weight: 400; color: var(--text-primary); letter-spacing: -.02em; line-height: 1; transition: color .35s; }
+    .project-arrow { font-size: 17px; color: var(--text-secondary); text-decoration: none; transition: color .2s, transform .2s; line-height: 1; }
+    .project-arrow:hover { color: var(--text-primary); transform: translate(2px, -2px); }
+    .project-body { display: grid; grid-template-columns: 1fr 1fr; gap: 28px; align-items: start; }
+    .project-image { width: 100%; aspect-ratio: 16/10; border-radius: 5px; overflow: hidden; background: var(--img-bg); position: relative; }
+    .project-image img { width: 100%; height: 100%; object-fit: cover; display: block; transition: transform .4s cubic-bezier(0.16, 1, 0.3, 1); }
+    .project-item:hover .project-image img { transform: scale(1.025); }
+    .project-img-ph { width: 100%; height: 100%; display: flex; align-items: center; justify-content: center; font-size: 9px; letter-spacing: .1em; text-transform: uppercase; color: rgba(255, 255, 255, 0.18); font-family: var(--font); }
+    .project-info { display: flex; flex-direction: column; gap: 10px; padding-top: 4px; }
+    .project-date { font-size: 11px; font-weight: 500; color: var(--text-secondary); letter-spacing: .04em; transition: color .35s; }
+    .project-desc { font-size: clamp(14px, 1.5vw, 19px); font-weight: 400; color: var(--text-primary); line-height: 1.5; letter-spacing: -.01em; transition: color .35s; }
+    .project-tags { display: flex; flex-wrap: wrap; gap: 7px; margin-top: 6px; }
+    .tag { font-size: 10px; font-weight: 500; letter-spacing: .06em; text-transform: uppercase; color: var(--text-secondary); border: 1px dotted var(--border); border-radius: 3px; padding: 2px 8px; transition: border-color .2s, color .2s; }
+    .project-item:hover .tag { border-color: var(--border-hover); }
+    
+    @media(max-width:960px) { .page { padding: 32px; } .project-body { grid-template-columns: 1fr; } }
+    @media(max-width:640px) { .page { padding: 20px; } }
+  </style>
+</head>
+<body>
+  <div class="page">
+    <section class="work-section">
+      <div class="section-header">
+        <span class="section-slash">/</span>
+        <span class="section-label">Selected Projects</span>
+        <span class="section-count">(3)</span>
+      </div>
+
+      <article class="project-item">
+        <div class="project-row-top">
+          <div class="project-meta-left">
+            <span class="project-num">00</span>
+            <h2 class="project-name">ODE Paper</h2>
+          </div>
+          <a class="project-arrow" href="ode-paper/index.html" aria-label="Open ODE Paper">↗</a>
+        </div>
+        <div class="project-body">
+          <div class="project-image">
+            <img src="../Assets/Cases/ode-paper/hero/cover.png" alt="ODE Paper Cover" />
+          </div>
+          <div class="project-info">
+            <span class="project-date">2025.05–2025.12</span>
+            <p class="project-desc">Build 0→1 Interactive Analysis Notebook for Engineers</p>
+            <div class="project-tags">
+              <span class="tag">AI Product Design</span>
+              <span class="tag">SaaS</span>
+            </div>
+          </div>
+        </div>
+      </article>
+
+      <article class="project-item">
+        <div class="project-row-top">
+          <div class="project-meta-left">
+            <span class="project-num">01</span>
+            <h2 class="project-name">ODE Plus</h2>
+          </div>
+          <a class="project-arrow" href="ode-plus/index.html" aria-label="Open ODE Plus">↗</a>
+        </div>
+        <div class="project-body">
+          <div class="project-image">
+            <div class="project-img-ph">img / ode-plus</div>
+          </div>
+          <div class="project-info">
+            <span class="project-date">2024.06–Now</span>
+            <p class="project-desc">Redesign Design System to make complex tools easier to learn</p>
+            <div class="project-tags">
+              <span class="tag">Design System</span>
+              <span class="tag">B2B</span>
+            </div>
+          </div>
+        </div>
+      </article>
+
+      <article class="project-item">
+        <div class="project-row-top">
+          <div class="project-meta-left">
+            <span class="project-num">02</span>
+            <h2 class="project-name">Lemonbox</h2>
+          </div>
+          <a class="project-arrow" href="lemonbox/index.html" aria-label="Open Lemonbox">↗</a>
+        </div>
+        <div class="project-body">
+          <div class="project-image">
+            <div class="project-img-ph">img / lemonbox</div>
+          </div>
+          <div class="project-info">
+            <span class="project-date">2020–2021</span>
+            <p class="project-desc">Brand & Product Design for Personalized Nutrition.</p>
+            <div class="project-tags">
+              <span class="tag">Product Design</span>
+              <span class="tag">E-Commerce</span>
+            </div>
+          </div>
+        </div>
+      </article>
+      
+      <!-- Thermomix is currently hidden from front-end -->
+    </section>
+  </div>
+  <script src="../Assets/system/js/global-ui.js"></script>
+</body>
+</html>

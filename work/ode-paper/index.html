@@ -1,0 +1,516 @@
+<!DOCTYPE html>
+<html lang="en" data-theme="light">
+<head>
+  <meta charset="UTF-8">
+  <meta name="viewport" content="width=device-width, initial-scale=1.0">
+  <title>ODE Paper — Case Study</title>
+  <link rel="stylesheet" href="../../css/tokens.css">
+  <link rel="stylesheet" href="../../css/global-ui.css">
+  <script>
+    (function(){var t=localStorage.getItem('ruini-theme');if(t)document.documentElement.setAttribute('data-theme',t)})();
+  </script>
+  <style>
+    *, *::before, *::after { box-sizing: border-box; margin: 0; padding: 0; }
+    html, body { height: 100%; scroll-behavior: smooth; }
+    body {
+      font-family: var(--font);
+      background: var(--bg);
+      background-image: radial-gradient(circle, var(--bg-dot) 1px, transparent 1px);
+      background-size: 24px 24px;
+      color: var(--text-primary);
+      -webkit-font-smoothing: antialiased;
+      transition: background-color .35s, color .35s;
+    }
+
+    /* ─── Page-Level Tokens ─── */
+    :root {
+      --cs-section-bg: #ffffff;
+      --cs-card-bg: #FAFAFA;
+      --cs-card-border: rgba(0,0,0,0.03);
+      --cs-icon-bg: rgba(242,242,245,0.5);
+      --cs-callout-bg: #FAFAFA;
+      --cs-img-inner-bg: #ffffff;
+      --cs-section-divider: rgba(0,0,0,0.06);
+      --cs-gradient-orange: rgba(234,123,72,0.10);
+      --cs-gradient-teal: rgba(33,114,171,0.05);
+      --cs-logo-bg: #ffffff;
+      --cs-logo-shadow: rgba(0,0,0,0.05);
+      --cs-logo-shadow-strong: rgba(0,0,0,0.10);
+      --cs-pill-border: #CCCCCC;
+      --cs-quote-border: var(--text-primary);
+    }
+    [data-theme="dark"] {
+      --cs-section-bg: #111318;
+      --cs-card-bg: rgba(255,255,255,0.04);
+      --cs-card-border: var(--border);
+      --cs-icon-bg: rgba(255,255,255,0.06);
+      --cs-callout-bg: rgba(255,255,255,0.04);
+      --cs-img-inner-bg: rgba(255,255,255,0.04);
+      --cs-section-divider: var(--border);
+      --cs-gradient-orange: rgba(234,123,72,0.06);
+      --cs-gradient-teal: rgba(33,114,171,0.04);
+      --cs-logo-bg: rgba(255,255,255,0.08);
+      --cs-logo-shadow: rgba(0,0,0,0.3);
+      --cs-logo-shadow-strong: rgba(0,0,0,0.4);
+      --cs-pill-border: var(--border);
+      --cs-quote-border: rgba(255,255,255,0.6);
+    }
+
+    .page { max-width: 1440px; margin: 0 auto; padding: 40px 80px; }
+
+    /* ─── Hero ─── */
+    .cs-hero { margin-top: 40px; display: flex; flex-direction: column; gap: 48px; }
+    .cs-cover { width: 100%; display: flex; justify-content: center; }
+    .cs-cover img { max-width: 1280px; width: 100%; max-height: 546px; object-fit: cover; display: block; border-radius: var(--radius); }
+    .cs-split { display: flex; gap: 72px; }
+
+    /* Title column */
+    .cs-title-col { width: 380px; flex-shrink: 0; display: flex; flex-direction: column; gap: 16px; }
+    .cs-title { font-size: clamp(32px, 3.5vw, 48px); font-weight: 400; line-height: 1.08; letter-spacing: -0.8px; }
+    .cs-title a { color: inherit; text-decoration: none; display: inline-flex; align-items: center; gap: 8px; position: relative; }
+    .cs-title a::after { content: ''; position: absolute; bottom: -1px; left: 0; width: 0; height: 2px; background: var(--text-primary); transition: width .3s; }
+    .cs-title a:hover::after { width: 100%; }
+    .cs-title-arrow { width: 24px; height: 24px; opacity: 0; transform: translateX(-8px); transition: opacity .3s, transform .3s; }
+    .cs-title a:hover .cs-title-arrow { opacity: 1; transform: translateX(0); }
+    .cs-subtitle { font-size: 16px; font-weight: 500; color: var(--text-secondary); line-height: 1.2; }
+
+    /* Info column */
+    .cs-info-col { flex: 1; display: flex; flex-direction: column; gap: 24px; }
+    .cs-brief-label { font-size: 12px; font-weight: 400; text-transform: uppercase; color: var(--text-secondary); }
+    .cs-brief { font-size: 16px; font-weight: 500; color: var(--text-secondary); line-height: 1.6; letter-spacing: -0.18px; }
+    .cs-divider { width: 100%; height: 1px; background: var(--cs-card-border); }
+    .cs-meta-grid { display: flex; flex-wrap: wrap; justify-content: space-between; gap: 16px; }
+    .cs-meta-item { display: flex; flex-direction: column; gap: 4px; }
+    .cs-meta-label { font-size: 12px; font-weight: 400; text-transform: uppercase; color: var(--text-secondary); }
+    .cs-meta-val { font-size: 14px; font-weight: 500; }
+    .cs-status-pill { display: inline-flex; padding: 2px 8px; background: var(--text-primary); color: var(--bg); font-size: 12px; font-weight: 600; text-transform: uppercase; letter-spacing: 0.05em; text-decoration: none; width: fit-content; transition: opacity .2s; }
+    .cs-status-pill:hover { opacity: 0.8; }
+
+    /* ─── Body Layout (TOC + Main) ─── */
+    .cs-body-wrapper { background: var(--cs-section-bg); margin: 80px -80px 0 -80px; padding: 80px; transition: background .35s; }
+    .cs-body { display: grid; grid-template-columns: 160px 1fr; gap: 40px; max-width: 1440px; margin: 0 auto; }
+
+    /* ─── TOC Sidebar ─── */
+    .cs-toc { position: sticky; top: 80px; align-self: start; display: flex; flex-direction: column; gap: 2px; padding: 64px 0 0 12px; border-left: 1px dotted var(--border); transition: border-color .35s; }
+    .cs-toc-link {
+      font-size: 11px; font-weight: 400; letter-spacing: 0.04em;
+      color: var(--text-secondary); text-decoration: none;
+      padding: 6px 0; transition: color .15s;
+    }
+    .cs-toc-link:hover { color: var(--text-primary); }
+    .cs-toc-link.active { color: var(--text-primary); font-weight: 500; }
+
+    /* ─── Main Content ─── */
+    .cs-main { display: flex; flex-direction: column; }
+
+    /* Section wrapper */
+    .cs-section {
+      padding: 64px 0;
+      display: flex; flex-direction: column; gap: 48px;
+    }
+    .cs-section + .cs-section { border-top: 1px dotted var(--cs-section-divider); }
+
+    /* Section header */
+    .cs-heading { font-size: clamp(24px, 2.5vw, 36px); font-weight: 400; line-height: 1.08; letter-spacing: -0.8px; }
+    .cs-desc { font-size: 16px; font-weight: 500; line-height: 1.5; letter-spacing: -0.18px; color: var(--text-secondary); max-width: 455px; }
+
+    /* ─── Cards ─── */
+    .cs-card {
+      background: var(--cs-card-bg);
+      border: 1px solid var(--cs-card-border);
+      border-radius: var(--radius);
+      padding: 24px; display: flex; flex-direction: column; gap: 12px;
+      transition: background .35s, border-color .35s;
+    }
+    .cs-card-title { font-size: 18px; font-weight: 600; line-height: 1.39; }
+    .cs-card-desc { font-size: 14px; font-weight: 500; line-height: 1.45; color: var(--text-secondary); }
+
+    /* Icon container on cards */
+    .cs-icon { width: 48px; height: 48px; background: var(--cs-icon-bg); display: flex; align-items: center; justify-content: center; flex-shrink: 0; border-radius: 8px; }
+    .cs-icon svg { width: 24px; height: 24px; stroke: var(--text-primary); fill: none; stroke-width: 2; stroke-linecap: round; stroke-linejoin: round; }
+
+    /* Card image area */
+    .cs-card-img { width: 100%; height: 300px; background: var(--cs-img-inner-bg); overflow: hidden; margin-top: auto; padding: 8px; border-radius: 8px; }
+    .cs-card-img img { width: 100%; height: 100%; object-fit: contain; border-radius: 4px; }
+
+    /* ─── Grids ─── */
+    .cs-grid-2 { display: flex; gap: 24px; }
+    .cs-grid-2 > * { flex: 1; }
+    .cs-grid-3 { display: flex; gap: 24px; }
+    .cs-grid-3 > * { flex: 1; display: flex; flex-direction: column; }
+
+    /* ─── Pain Point Layout ─── */
+    .cs-painpoint-row { display: flex; gap: 48px; background: var(--cs-card-bg); padding: 48px; border-radius: var(--radius); }
+    .cs-painpoint-text { display: flex; flex-direction: column; gap: 32px; width: 275px; flex-shrink: 0; }
+    .cs-painpoint-img { flex: 1; overflow: hidden; min-height: 250px; border-radius: 8px; }
+    .cs-painpoint-img img { width: 100%; height: 100%; object-fit: cover; }
+
+    /* ─── Callout ─── */
+    .cs-callout { background: var(--cs-callout-bg); padding: 64px; display: flex; flex-direction: column; gap: 16px; border-radius: var(--radius); }
+    .cs-callout-title { font-size: clamp(24px, 3vw, 32px); font-weight: 700; line-height: 1.15; }
+    .cs-callout-desc { font-size: 16px; line-height: 1.6; color: var(--text-secondary); font-weight: 500; }
+
+    /* ─── Definition Split ─── */
+    .cs-def-split { display: flex; gap: 48px; align-items: center; }
+    .cs-def-img { flex: 1; overflow: hidden; height: 400px; box-shadow: 0 20px 40px var(--cs-logo-shadow-strong); border-radius: var(--radius); }
+    .cs-def-img img { width: 100%; height: 100%; object-fit: cover; }
+
+    /* ─── AI Callout ─── */
+    .cs-ai-callout {
+      background: var(--cs-callout-bg); padding: 80px;
+      display: flex; flex-direction: column; align-items: center; text-align: center;
+      position: relative; overflow: hidden;
+      border-radius: var(--radius);
+    }
+    .cs-ai-blob {
+      position: absolute; border-radius: 50%;
+      transition: transform .7s;
+    }
+    .cs-ai-callout:hover .cs-ai-blob { transform: scale(1.1); }
+    .cs-ai-blob-orange { width: 256px; height: 256px; background: var(--cs-gradient-orange); top: 0; right: 0; margin-right: -128px; margin-top: -128px; }
+    .cs-ai-blob-teal { width: 192px; height: 192px; background: var(--cs-gradient-teal); bottom: 0; left: 0; margin-left: -96px; margin-bottom: -96px; }
+
+    /* Logo Cards */
+    .cs-logo-area { position: relative; width: 288px; height: 144px; margin-bottom: 48px; display: flex; align-items: center; justify-content: center; }
+    .cs-logo-card {
+      position: absolute; width: 112px; height: 112px;
+      background: var(--cs-logo-bg);
+      box-shadow: 0 4px 24px var(--cs-logo-shadow);
+      display: flex; align-items: center; justify-content: center;
+      transition: transform .5s;
+      z-index: 10;
+      border-radius: 12px;
+    }
+    .cs-logo-card:hover { transform: translateY(-8px); z-index: 30; }
+    .cs-logo-card img { width: 64px; height: 64px; object-fit: contain; }
+    .cs-logo-paper { left: 0; bottom: 0; }
+    .cs-logo-ai { right: 0; top: 0; z-index: 20; box-shadow: 0 8px 32px var(--cs-logo-shadow-strong); border: 1px solid var(--cs-card-border); }
+
+    .cs-ai-quote { font-size: clamp(24px, 4vw, 56px); font-weight: 400; line-height: 1.2; letter-spacing: -0.03em; max-width: 980px; position: relative; z-index: 10; }
+    .cs-ai-quote .faded { color: var(--text-secondary); opacity: 0.4; }
+    .cs-ai-quote .highlight { font-weight: 500; position: relative; }
+    .cs-ai-quote .highlight::after { content: ''; position: absolute; bottom: 4px; left: 0; width: 100%; height: 12px; background: rgba(234,123,72,0.10); z-index: -1; }
+
+    /* ─── AI Demos ─── */
+    .cs-demo-row { display: flex; gap: 48px; align-items: center; }
+    .cs-demo-media { flex: 1; background: var(--cs-img-inner-bg); padding: 24px; border-radius: var(--radius); }
+    .cs-demo-media img { width: 100%; height: auto; border-radius: 8px; }
+    .cs-demo-text { width: 400px; flex-shrink: 0; display: flex; flex-direction: column; gap: 16px; }
+
+    .cs-demo-card { flex: 1; background: var(--cs-card-bg); border: 1px solid var(--cs-section-divider); padding: 24px; display: flex; flex-direction: column; gap: 16px; border-radius: var(--radius); }
+    .cs-demo-card-media { width: 100%; height: 300px; background: var(--cs-img-inner-bg); overflow: hidden; border-radius: 8px; }
+    .cs-demo-card-media img { width: 100%; height: 100%; object-fit: cover; }
+
+    /* ─── Impact ─── */
+    .cs-impact-split { display: flex; gap: 64px; }
+    .cs-impact-split > div { flex: 1; display: flex; flex-direction: column; gap: 24px; }
+    .cs-impact-label { font-size: 12px; font-weight: 400; text-transform: uppercase; color: var(--text-secondary); margin-bottom: 8px; }
+    .cs-impact-text { font-size: 16px; font-weight: 500; line-height: 1.6; color: var(--text-secondary); }
+    .cs-pills { display: flex; flex-wrap: wrap; gap: 12px; }
+    .cs-pill { padding: 8px 16px; border: 1px dotted var(--cs-pill-border); font-size: 14px; transition: border-color .2s; border-radius: 999px; }
+
+    /* Quote */
+    .cs-closing-quote { border-top: 1px solid var(--cs-section-divider); padding-top: 48px; margin-top: 16px; }
+    .cs-quote-text { font-family: Georgia, serif; font-size: clamp(20px, 2.5vw, 28px); font-weight: 500; font-style: italic; color: var(--text-primary); opacity: 0.9; line-height: 1.6; padding-left: 24px; border-left: 2px solid var(--cs-quote-border); }
+
+    /* ─── Responsive ─── */
+    @media (max-width: 960px) {
+      .page { padding: 32px; }
+      .cs-split { flex-direction: column; gap: 40px; }
+      .cs-title-col { width: 100%; }
+      .cs-body { grid-template-columns: 1fr; }
+      .cs-toc { display: none; }
+      .cs-section { padding: 40px 24px; }
+      .cs-grid-2, .cs-grid-3 { flex-direction: column; }
+      .cs-painpoint-row { flex-direction: column; padding: 24px; }
+      .cs-painpoint-text { width: 100%; }
+      .cs-def-split { flex-direction: column; }
+      .cs-def-img { height: 300px; }
+      .cs-demo-row { flex-direction: column; }
+      .cs-demo-text { width: 100%; }
+      .cs-impact-split { flex-direction: column; }
+      .cs-ai-callout { padding: 40px 24px; }
+      .cs-callout { padding: 32px; }
+    }
+  </style>
+</head>
+<body>
+<div class="page">
+
+  <!-- ═══ HERO ═══ -->
+  <article class="cs-hero" id="top">
+    <div class="cs-cover">
+      <img src="../../Assets/Cases/ode-paper/hero/cover.png" alt="ODE Paper Cover">
+    </div>
+
+    <div class="cs-split">
+      <div class="cs-title-col">
+        <h1 class="cs-title">
+          <a href="https://www.orthogonal.dev/" target="_blank" rel="noopener noreferrer">
+            ODE-Paper
+            <svg class="cs-title-arrow" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2.5" stroke-linecap="round" stroke-linejoin="round"><path d="M7 17l10-10M7 7h10v10"></path></svg>
+          </a>
+        </h1>
+        <h2 class="cs-subtitle">Interactive Analysis Notebook for Engineers</h2>
+      </div>
+      <div class="cs-info-col">
+        <span class="cs-brief-label">(brief)</span>
+        <p class="cs-brief">Built 0→1 modular system unifying code, parameters, and visualization into dynamic documents.</p>
+        <div class="cs-divider"></div>
+        <div class="cs-meta-grid">
+          <div class="cs-meta-item">
+            <span class="cs-meta-label">Timeline</span>
+            <span class="cs-meta-val">2025.05–2025.12</span>
+          </div>
+          <div class="cs-meta-item">
+            <span class="cs-meta-label">Tools</span>
+            <span class="cs-meta-val">AI (Fig Make, AI studio), Figma</span>
+          </div>
+          <div class="cs-meta-item">
+            <span class="cs-meta-label">Role</span>
+            <span class="cs-meta-val">Product designer</span>
+          </div>
+          <div class="cs-meta-item">
+            <span class="cs-meta-label">Status</span>
+            <a href="https://www.orthogonal.dev/" target="_blank" rel="noopener noreferrer" class="cs-status-pill">In Beta</a>
+          </div>
+        </div>
+        <div class="cs-divider"></div>
+      </div>
+    </div>
+  </article>
+
+  <!-- ═══ BODY: TOC + MAIN ═══ -->
+  <div class="cs-body-wrapper">
+    <div class="cs-body">
+
+      <!-- TOC Sidebar -->
+      <aside class="cs-toc" id="cs-toc">
+        <a href="#background" class="cs-toc-link" data-section="background">Background</a>
+        <a href="#definition" class="cs-toc-link" data-section="definition">Product Defining</a>
+        <a href="#highlights" class="cs-toc-link" data-section="highlights">Design Highlights</a>
+        <a href="#ai" class="cs-toc-link" data-section="ai">AI Integration</a>
+        <a href="#impact" class="cs-toc-link" data-section="impact">Impact</a>
+      </aside>
+
+      <!-- Main Content -->
+      <main class="cs-main">
+
+      <!-- ── 01. Background ── -->
+      <section id="background" class="cs-section">
+        <div style="display:flex;flex-direction:column;gap:12px">
+          <h2 class="cs-heading">Background</h2>
+          <p class="cs-desc">Engineers writing technical reports constantly switch between tools, leading to:</p>
+        </div>
+
+        <!-- Pain Points -->
+        <div class="cs-painpoint-row">
+          <div class="cs-painpoint-text">
+            <div>
+              <h4 class="cs-card-title">Authoring</h4>
+              <p class="cs-card-desc" style="margin-top:8px">The authoring process is fragmented across disconnected environments.</p>
+            </div>
+            <div>
+              <h4 class="cs-card-title">Delivery</h4>
+              <p class="cs-card-desc" style="margin-top:8px">When engineering papers can't be run, verified, or interacted with, they become black boxes.</p>
+            </div>
+          </div>
+          <div class="cs-painpoint-img">
+            <img src="../../Assets/Cases/ode-paper/section-1/painpoint.png" alt="Painpoints Visual">
+          </div>
+        </div>
+
+        <!-- Solution Callout -->
+        <div class="cs-callout">
+          <h3 class="cs-callout-title">Paper's solution</h3>
+          <p class="cs-callout-desc">Unified environment where writing = analysis = presentation. What's delivered isn't a static report, but an explorable, reproducible interactive document.</p>
+        </div>
+      </section>
+
+      <!-- ── 02. Product Defining ── -->
+      <section id="definition" class="cs-section">
+        <div class="cs-def-split">
+          <div style="flex:1;display:flex;flex-direction:column;gap:12px">
+            <h2 class="cs-heading">Product defining</h2>
+            <p class="cs-desc">To define the product scope and clarify core requirements, I organized a workshop with the team using physical cards to simulate real user workflows.</p>
+          </div>
+          <div class="cs-def-img">
+            <img src="../../Assets/Cases/ode-paper/section-2/workshop.jpg" alt="Workshop Session">
+          </div>
+        </div>
+
+        <!-- Core Insights -->
+        <div class="cs-grid-2">
+          <div class="cs-card">
+            <h4 class="cs-card-title" style="font-size:clamp(20px,2.5vw,28px);font-weight:400;letter-spacing:-0.4px">Users need to reference data from multiple sources.</h4>
+            <p class="cs-card-desc">Engineers pull data from different places — models from ODE simulation apps, code, external table files — and combine them into analysis workflows.</p>
+          </div>
+          <div class="cs-card">
+            <h4 class="cs-card-title" style="font-size:clamp(20px,2.5vw,28px);font-weight:400;letter-spacing:-0.4px">Connecting analysis components is critical.</h4>
+            <p class="cs-card-desc">The value lies in traceability. Changing a parameter should automatically update the referencing code and downstream plots.</p>
+          </div>
+        </div>
+      </section>
+
+      <!-- ── 03. Design Highlights ── -->
+      <section id="highlights" class="cs-section">
+        <h2 class="cs-heading">Designing a modular system as the foundation</h2>
+
+        <div class="cs-grid-3">
+          <!-- Card 1: General -->
+          <div class="cs-card">
+            <div class="cs-icon">
+              <svg viewBox="0 0 24 24"><polygon points="12 2 2 7 12 12 22 7 12 2"></polygon><polyline points="2 17 12 22 22 17"></polyline><polyline points="2 12 12 17 22 12"></polyline></svg>
+            </div>
+            <h4 class="cs-card-title">General Module Behaviors</h4>
+            <p class="cs-card-desc">All modules share consistent behaviors for fast editing and connect through parent-child binding for data traceability.</p>
+            <div class="cs-card-img">
+              <img src="../../Assets/Cases/ode-paper/section-3/Feature-general.png" alt="General Behaviors">
+            </div>
+          </div>
+
+          <!-- Card 2: Code -->
+          <div class="cs-card">
+            <div class="cs-icon">
+              <svg viewBox="0 0 24 24"><polyline points="16 18 22 12 16 6"></polyline><polyline points="8 6 2 12 8 18"></polyline></svg>
+            </div>
+            <h4 class="cs-card-title">Code Modules</h4>
+            <p class="cs-card-desc">Run simulations and analysis in-notebook. Switch between text and visual views for clearer model understanding.</p>
+            <div class="cs-card-img">
+              <img src="../../Assets/Cases/ode-paper/section-3/Feature-code.png" alt="Code Modules">
+            </div>
+          </div>
+
+          <!-- Card 3: Visualization -->
+          <div class="cs-card">
+            <div class="cs-icon">
+              <svg viewBox="0 0 24 24"><path d="M3 3v18h18"></path><path d="M18 17V9"></path><path d="M13 17V5"></path><path d="M8 17v-3"></path></svg>
+            </div>
+            <h4 class="cs-card-title">Visualization Modules</h4>
+            <p class="cs-card-desc">Inspect and validate results in Table. Explore patterns and comparisons in Plot. Switch views while keeping same source.</p>
+            <div class="cs-card-img">
+              <img src="../../Assets/Cases/ode-paper/section-3/Feature-visualization.png" alt="Visualization Modules">
+            </div>
+          </div>
+        </div>
+      </section>
+
+      <!-- ── 04. AI Integration ── -->
+      <section id="ai" class="cs-section">
+
+        <!-- AI Callout -->
+        <div class="cs-ai-callout">
+          <div class="cs-ai-blob cs-ai-blob-orange"></div>
+          <div class="cs-ai-blob cs-ai-blob-teal"></div>
+
+          <div class="cs-logo-area">
+            <div class="cs-logo-card cs-logo-paper">
+              <img src="../../Assets/Cases/ode-paper/logos/Paper.svg" alt="Paper Logo">
+            </div>
+            <div class="cs-logo-card cs-logo-ai">
+              <img src="../../Assets/Cases/ode-paper/logos/ODE-AI.svg" alt="ODE AI Logo">
+            </div>
+          </div>
+
+          <h2 class="cs-ai-quote">
+            <span class="faded">AI shouldn't be a general chatbot — </span>
+            it should be a <span class="highlight">collaborator</span> embedded in the workflow.
+          </h2>
+        </div>
+
+        <!-- AI Mechanisms -->
+        <div style="display:flex;flex-direction:column;gap:48px">
+          <!-- Mech 1: AI in Outline -->
+          <div class="cs-demo-row">
+            <div class="cs-demo-media">
+              <img src="../../Assets/Cases/ode-paper/section-4/Demo-1.gif" alt="Context-aware generation">
+            </div>
+            <div class="cs-demo-text">
+              <h4 class="cs-card-title">AI Integration in Outline</h4>
+              <p class="cs-card-desc" style="font-size:16px;line-height:1.6">Trigger AI from the Outline while browsing. Call out a specific module and run targeted "Suggest" commands in context.</p>
+            </div>
+          </div>
+
+          <!-- Mech 2 + 3 -->
+          <div class="cs-grid-2">
+            <div class="cs-demo-card">
+              <div class="cs-demo-card-media">
+                <img src="../../Assets/Cases/ode-paper/section-4/Demo-2.gif" alt="AI Assistance in Code Module">
+              </div>
+              <h4 class="cs-card-title">AI Assistance in Code Module</h4>
+              <p class="cs-card-desc" style="font-size:16px;line-height:1.6">Generate runnable code directly inside Code modules. Also supports quick edits like fixing errors and refactoring.</p>
+            </div>
+            <div class="cs-demo-card">
+              <div class="cs-demo-card-media">
+                <img src="../../Assets/Cases/ode-paper/section-4/Demo-3.gif" alt="Quick Add Modules for Next Step">
+              </div>
+              <h4 class="cs-card-title">Quick Add Modules for Next Step</h4>
+              <p class="cs-card-desc" style="font-size:16px;line-height:1.6">From a current result, ask a question and instantly add the next module to continue the analysis.</p>
+            </div>
+          </div>
+        </div>
+      </section>
+
+      <!-- ── 05. Impact ── -->
+      <section id="impact" class="cs-section" style="margin-bottom:40px">
+        <h2 class="cs-heading">Impact & future directions</h2>
+
+        <div class="cs-impact-split">
+          <!-- Left: Impact -->
+          <div>
+            <div>
+              <h4 class="cs-impact-label">Impact</h4>
+              <p class="cs-impact-text">Since then, we've welcomed ODE Believers from institutions including:</p>
+            </div>
+            <div class="cs-pills">
+              <span class="cs-pill">German Aerospace Center</span>
+              <span class="cs-pill">Rensselaer Polytechnic Institute</span>
+              <span class="cs-pill">TU Munich</span>
+              <span class="cs-pill">LTX Simulation</span>
+            </div>
+          </div>
+          <!-- Right: Next Step -->
+          <div>
+            <div>
+              <h4 class="cs-impact-label">Next step</h4>
+              <p class="cs-impact-text">Viewer-side AI: enabling readers to ask questions and explore results interactively — turning static consumption into active investigation.</p>
+            </div>
+            <div class="cs-closing-quote">
+              <p class="cs-quote-text">"The goal isn't smarter AI — it's clearer workflows where human insight and machine speed work in tandem."</p>
+            </div>
+          </div>
+        </div>
+      </section>
+
+    </main>
+  </div>
+</div>
+</div>
+
+<script src="../../Assets/system/js/global-ui.js"></script>
+<script>
+  // ScrollSpy for TOC sidebar
+  (function() {
+    const tocLinks = document.querySelectorAll('.cs-toc-link');
+    const sections = document.querySelectorAll('.cs-main section[id]');
+
+    if (!tocLinks.length || !sections.length) return;
+
+    function updateActive() {
+      let currentId = '';
+      sections.forEach(section => {
+        if (window.scrollY >= section.offsetTop - 160) {
+          currentId = section.id;
+        }
+      });
+      tocLinks.forEach(link => {
+        link.classList.toggle('active', link.dataset.section === currentId);
+      });
+    }
+
+    window.addEventListener('scroll', updateActive, { passive: true });
+    updateActive();
+  })();
+</script>
+</body>
+</html>

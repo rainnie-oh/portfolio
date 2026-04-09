@@ -1,0 +1,80 @@
+
+<html lang="en" data-theme="light">
+<head>
+<meta charset="UTF-8">
+<meta name="viewport" content="width=device-width, initial-scale=1.0">
+<title>Womenstruation — Playground</title>
+<script>document.documentElement.dataset.theme = localStorage.getItem('ruini-theme') || 'light';</script>
+<link href="https://fonts.googleapis.com/css2?family=IBM+Plex+Mono:ital,wght@0,400;0,500;0,600;1,400&display=swap" rel="stylesheet">
+<link rel="stylesheet" href="../../css/tokens.css">
+<link rel="stylesheet" href="../../Assets/system/css/playground-detail.css">
+<style>
+/* Page specific code aesthetic */
+:root{--font:'IBM Plex Mono',monospace;--ease-spring:cubic-bezier(0.22,1,0.36,1);--ease-out:cubic-bezier(0.16,1,0.3,1)}
+[data-theme="light"]{--bg:#F6F7F9;--bg-dot:#D1D5DB;--text-primary:#111318;--text-secondary:#6B7280;--border:#D1D5DB}
+[data-theme="dark"]{--bg:#0a0a0a;--bg-dot:rgba(255,255,255,0.06);--text-primary:#ffffff;--text-secondary:rgba(255,255,255,0.4);--border:rgba(255,255,255,0.14)}
+*,*::before,*::after{box-sizing:border-box;margin:0;padding:0}
+body{font-family:var(--font);background:var(--bg);background-image:radial-gradient(circle,var(--bg-dot) 1px,transparent 1px);background-size:24px 24px;color:var(--text-primary);-webkit-font-smoothing:antialiased}
+.scanlines{position:fixed;inset:0;pointer-events:none;z-index:50;background:linear-gradient(rgba(18,16,16,0) 50%,rgba(0,0,0,0.18) 50%),linear-gradient(90deg,rgba(255,0,0,0.04),rgba(0,255,0,0.015),rgba(0,0,255,0.04));background-size:100% 4px,3px 100%;opacity:0;transition:opacity .35s}
+[data-theme="dark"] .scanlines{opacity:1}
+.frame{position:fixed;inset:14px;pointer-events:none;z-index:40;border:1px solid rgba(255,255,255,0.05);opacity:0;transition:opacity .35s}
+[data-theme="dark"] .frame{opacity:1}
+.frame::before,.frame::after{content:'';position:absolute;width:26px;height:26px}
+.frame::before{top:-1px;left:-1px;border-top:1.5px solid var(--accent);border-left:1.5px solid var(--accent)}
+.frame::after{bottom:-1px;right:-1px;border-bottom:1.5px solid var(--accent);border-right:1.5px solid var(--accent)}
+.page{max-width:1440px;margin:0 auto;padding:40px 80px;display:flex;flex-direction:column;position:relative;z-index:1}
+</style>
+</head>
+<body>
+<div class="scanlines" aria-hidden="true"></div>
+<div class="frame" aria-hidden="true"></div>
+<div class="page">
+  <header id="global-header"></header>
+
+  <div class="detail-layout">
+    <aside class="detail-sidebar">
+      <a href="../index.html" class="back-link">← Playground</a>
+      
+      <div class="meta-group">
+        <div class="meta-item">
+          <span class="meta-label">Timeline</span>
+          <span class="meta-val">2022.09–2022.11</span>
+        </div>
+        <div class="meta-item">
+          <span class="meta-label">Tags</span>
+          <div class="meta-tags">
+            <span class="meta-tag">Installation</span>
+            <span class="meta-tag">Creative Computing</span>
+          </div>
+        </div>
+        <div class="meta-item">
+          <span class="meta-label">Tools</span>
+          <span class="meta-val">Arduino, p5.js</span>
+        </div>
+        <div class="meta-item">
+          <span class="meta-label">Role</span>
+          <span class="meta-val">Design Technologist</span>
+        </div>
+      </div>
+    </aside>
+
+    <main class="detail-main">
+      <div class="detail-header">
+        <h1 class="detail-title">Womenstruation</h1>
+        <p class="detail-summary">An interactive hardware installation that uses speech recognition to detect keywords, visualizing the act of naming it as a step-by-step process of breaking tapoos.</p>
+      </div>
+
+      <section class="pg-gallery">
+        <div class="pg-media-hero">
+          <video src="../../Assets/Playground/installation/womenstruation/video.mp4" controls autoplay muted loop playsinline></video>
+        </div>
+      </section>
+    </main>
+  </div>
+
+  <footer class="global-footer"></footer>
+</div>
+
+<script src="../../Assets/system/js/global-ui.js"></script>
+</body>
+</html>

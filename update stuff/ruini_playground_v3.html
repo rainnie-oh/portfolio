@@ -1,0 +1,429 @@
+
+<html lang="en" data-theme="light">
+<head>
+<link href="https://fonts.googleapis.com/css2?family=IBM+Plex+Mono:ital,wght@0,400;0,500;0,600;1,400&display=swap" rel="stylesheet">
+<style>
+:root{--font:'IBM Plex Mono',monospace;--ease-spring:cubic-bezier(0.22,1,0.36,1);--ease-out:cubic-bezier(0.16,1,0.3,1)}
+[data-theme="light"]{--bg:#F6F7F9;--bg-dot:#D1D5DB;--text-primary:#111318;--text-secondary:#6B7280;--border:#D1D5DB;--border-hover:#6B7280;--accent:#6B7CFF;--card-bg:#F6F7F9;--card-border:#C8CAD0;--card-img-bg:#E8E9EC;--feed-hover-bg:transparent;--feed-hover-text:#111318;--feed-hover-tag-bg:transparent;--feed-hover-tag-text:#6B7280}
+[data-theme="dark"]{--bg:#0a0a0a;--bg-dot:rgba(255,255,255,0.06);--text-primary:#ffffff;--text-secondary:rgba(255,255,255,0.4);--border:rgba(255,255,255,0.14);--border-hover:rgba(255,255,255,0.7);--accent:#ffffff;--card-bg:#111318;--card-border:rgba(255,255,255,0.16);--card-img-bg:#1a1c24;--feed-hover-bg:transparent;--feed-hover-text:#fff;--feed-hover-tag-bg:#ffffff;--feed-hover-tag-text:#0a0a0a}
+*,*::before,*::after{box-sizing:border-box;margin:0;padding:0}
+body{font-family:var(--font);background:var(--bg);background-image:radial-gradient(circle,var(--bg-dot) 1px,transparent 1px);background-size:24px 24px;color:var(--text-primary);-webkit-font-smoothing:antialiased;transition:background-color .35s,color .35s}
+.scanlines{position:fixed;inset:0;pointer-events:none;z-index:50;background:linear-gradient(rgba(18,16,16,0) 50%,rgba(0,0,0,0.18) 50%),linear-gradient(90deg,rgba(255,0,0,0.04),rgba(0,255,0,0.015),rgba(0,0,255,0.04));background-size:100% 4px,3px 100%;opacity:0;transition:opacity .35s}
+[data-theme="dark"] .scanlines{opacity:1}
+.frame{position:fixed;inset:14px;pointer-events:none;z-index:40;border:1px solid rgba(255,255,255,0.05);opacity:0;transition:opacity .35s}
+[data-theme="dark"] .frame{opacity:1}
+.frame::before,.frame::after{content:'';position:absolute;width:22px;height:22px}
+.frame::before{top:-1px;left:-1px;border-top:1.5px solid var(--accent);border-left:1.5px solid var(--accent)}
+.frame::after{bottom:-1px;right:-1px;border-bottom:1.5px solid var(--accent);border-right:1.5px solid var(--accent)}
+.page{max-width:1440px;margin:0 auto;padding:28px 40px 64px;display:flex;flex-direction:column}
+
+/* Header */
+header{display:flex;justify-content:space-between;align-items:center;padding-bottom:16px;border-bottom:1px solid var(--border);transition:border-color .35s;animation:fadeUp .5s var(--ease-out) .05s both}
+.header-id{font-size:10px;font-weight:500;letter-spacing:.12em;text-transform:uppercase;color:var(--text-secondary);transition:color .35s}
+.header-right{display:flex;align-items:center;gap:24px}
+nav{display:flex;gap:22px}
+nav a{font-size:10px;font-weight:500;letter-spacing:.07em;text-transform:uppercase;color:var(--text-primary);text-decoration:none;padding-bottom:2px;border-bottom:1px solid transparent;transition:border-color .2s,color .2s}
+nav a:hover{border-bottom-color:var(--accent)}
+nav a.active{border-bottom-color:var(--accent)}
+[data-theme="dark"] nav a:hover{text-shadow:0 0 8px rgba(255,255,255,0.35);border-bottom-color:transparent}
+.theme-btn{background:none;border:1px solid var(--border);border-radius:4px;padding:4px 10px;font-family:var(--font);font-size:9px;letter-spacing:.07em;text-transform:uppercase;color:var(--text-secondary);cursor:pointer;display:flex;align-items:center;gap:6px;transition:border-color .2s,color .2s}
+.theme-btn:hover{border-color:var(--accent);color:var(--text-primary)}
+.dot{width:5px;height:5px;border-radius:50%;background:var(--accent);flex-shrink:0}
+
+/* Page hero */
+.pg-hero{padding:44px 0 36px;animation:fadeUp .6s var(--ease-out) .1s both}
+.pg-heading{font-size:clamp(36px,5.5vw,62px);font-weight:400;letter-spacing:-.03em;line-height:1.0;color:var(--text-primary);transition:color .35s}
+.pg-heading sup{font-size:.3em;vertical-align:super;color:var(--text-secondary);font-weight:400;margin-left:4px}
+.pg-desc{font-size:13px;line-height:1.7;color:var(--text-secondary);max-width:420px;padding-top:16px;transition:color .35s;font-style:italic}
+
+/* Layout */
+.playground-layout{display:grid;grid-template-columns:168px 1fr;gap:52px;animation:fadeUp .6s var(--ease-out) .18s both}
+
+/* ── Sidebar ── */
+.sidebar{position:sticky;top:20px;height:fit-content}
+
+/* Filter header — above the divider */
+.filter-header{display:flex;align-items:center;gap:6px;margin-bottom:10px}
+.filter-slash{font-size:11px;color:var(--text-secondary);transition:color .35s}
+.filter-header-label{font-size:9px;font-weight:500;letter-spacing:.14em;text-transform:uppercase;color:var(--text-secondary);transition:color .35s}
+
+/* Divider between label and items */
+.filter-divider{height:1px;background:var(--border);margin-bottom:14px;transition:background .35s}
+
+/* All + filter items live below divider */
+.tree{display:flex;flex-direction:column;gap:1px}
+
+.filter-item{display:flex;align-items:center;gap:8px;padding:5px 0;cursor:pointer;user-select:none}
+.filter-checkbox{width:12px;height:12px;border:1px solid var(--border-hover);border-radius:2px;flex-shrink:0;display:flex;align-items:center;justify-content:center;transition:background .15s,border-color .15s;position:relative}
+/* Check icon via pseudo when checked */
+.filter-item.checked .filter-checkbox{background:var(--text-primary);border-color:var(--text-primary)}
+.filter-item.checked .filter-checkbox::after{
+  content:'';
+  display:block;
+  width:6px;height:4px;
+  border-left:1.5px solid var(--bg);
+  border-bottom:1.5px solid var(--bg);
+  transform:rotate(-45deg) translate(0.5px,-0.5px);
+  flex-shrink:0;
+}
+.filter-label{font-size:11px;font-weight:400;color:var(--text-secondary);transition:color .15s}
+.filter-item:hover .filter-label{color:var(--text-primary)}
+.filter-item.checked .filter-label{color:var(--text-primary)}
+.filter-count{font-size:9px;color:var(--text-secondary);opacity:.55;margin-left:1px}
+
+/* Type label row — no checkbox, just a label */
+.type-label-row{display:flex;align-items:center;gap:8px;padding:5px 0 3px}
+.type-indent{display:flex;flex-direction:column;gap:1px;padding-left:20px;border-left:1px dotted var(--border);margin-left:5px;transition:border-color .35s}
+
+/* ── Section header ── */
+.section-header{display:flex;align-items:baseline;gap:7px;padding:14px 0;border-top:1px solid var(--border);transition:border-color .35s}
+.s-slash{font-size:11px;color:var(--text-secondary);transition:color .35s}
+.s-label{font-size:9px;font-weight:500;letter-spacing:.14em;text-transform:uppercase;color:var(--text-secondary);transition:color .35s}
+.s-count{font-size:.75em;color:var(--text-secondary);opacity:.6;vertical-align:super;margin-left:2px}
+
+/* ── Cards ── */
+.card-grid{display:grid;grid-template-columns:repeat(2,1fr);gap:12px;margin-bottom:20px}
+
+.proj-card{
+  background:var(--card-bg);
+  border:1px solid var(--card-border);
+  border-radius:5px;
+  overflow:hidden;
+  text-decoration:none;
+  color:inherit;
+  display:flex;
+  flex-direction:column;
+  transition:border-color .2s;
+  cursor:pointer;
+}
+/* Light: subtle shadow lift on hover */
+[data-theme="light"] .proj-card:hover{border-color:var(--border-hover);box-shadow:0 2px 12px rgba(0,0,0,0.08)}
+/* Dark: glow */
+[data-theme="dark"] .proj-card:hover{border-color:var(--border-hover);box-shadow:0 0 14px rgba(255,255,255,0.07)}
+
+.card-img{
+  width:100%;
+  aspect-ratio:16/9;
+  background:var(--card-img-bg);
+  overflow:hidden;
+  display:flex;
+  align-items:center;
+  justify-content:center;
+  /* FIG.2 style: dot grid inside card image area */
+  background-image:radial-gradient(circle,var(--bg-dot) 1px,transparent 1px);
+  background-size:16px 16px;
+  position:relative;
+  border-bottom:1px solid var(--card-border);
+  transition:border-color .35s;
+}
+.card-img-placeholder{font-size:8px;letter-spacing:.1em;text-transform:uppercase;color:var(--text-secondary);opacity:.4;font-family:var(--font)}
+.card-img img{width:100%;height:100%;object-fit:cover;display:block;transition:transform .4s var(--ease-out);position:absolute;inset:0}
+.proj-card:hover .card-img img{transform:scale(1.04)}
+
+/* Body: no background tint */
+.card-body{padding:12px 14px 14px;display:flex;flex-direction:column;gap:5px;background:transparent}
+.card-date{font-size:9px;font-weight:500;color:var(--text-secondary);letter-spacing:.04em;transition:color .35s}
+.card-title{font-size:13px;font-weight:400;color:var(--text-primary);letter-spacing:-.01em;line-height:1.35;transition:color .35s}
+.card-tags{display:flex;flex-wrap:wrap;gap:5px;margin-top:5px}
+.card-tag{font-size:8px;font-weight:500;letter-spacing:.07em;text-transform:uppercase;color:var(--text-secondary);border:1px dotted var(--card-border);border-radius:2px;padding:2px 6px;transition:border-color .2s,color .2s}
+.proj-card:hover .card-tag{border-color:var(--border-hover)}
+
+/* ── Feed (Article) ── */
+.feed-section{margin-bottom:8px}
+.feed-item{border-top:1px solid var(--border);transition:border-color .35s}
+.feed-item:last-child{border-bottom:1px solid var(--border)}
+
+/* Light hover: standard text brightening */
+.feed-row{display:grid;grid-template-columns:72px 1fr auto 24px;align-items:center;gap:16px;padding:14px 0;cursor:pointer;border-radius:3px;transition:background .15s;padding-left:4px;padding-right:4px;margin:0 -4px}
+.feed-row:hover .feed-date,.feed-row:hover .feed-title,.feed-row:hover .feed-expand{color:var(--text-primary)}
+
+/* Dark hover: tag area inverts, rest white */
+[data-theme="dark"] .feed-row:hover .feed-date,
+[data-theme="dark"] .feed-row:hover .feed-title,
+[data-theme="dark"] .feed-row:hover .feed-expand{color:#ffffff}
+[data-theme="dark"] .feed-item:hover .feed-tag{
+  background:#ffffff;
+  color:#0a0a0a;
+  border-color:#ffffff;
+  border-style:solid;
+}
+
+.feed-date{font-size:10px;font-weight:500;color:var(--text-secondary);letter-spacing:.04em;transition:color .2s;white-space:nowrap}
+.feed-title{font-size:clamp(13px,1.3vw,17px);font-weight:400;color:var(--text-primary);letter-spacing:-.01em;transition:color .2s;line-height:1.2}
+.feed-tag{font-size:8px;font-weight:500;letter-spacing:.07em;text-transform:uppercase;color:var(--text-secondary);border:1px dotted var(--border);border-radius:2px;padding:2px 6px;white-space:nowrap;transition:background .2s,color .2s,border-color .2s}
+.feed-expand{font-size:16px;font-weight:300;color:var(--text-secondary);text-align:center;transition:color .2s,transform .25s var(--ease-out);user-select:none;line-height:1}
+.feed-item.open .feed-expand{transform:rotate(45deg)}
+.feed-body{display:grid;grid-template-rows:0fr;transition:grid-template-rows .38s var(--ease-out)}
+.feed-item.open .feed-body{grid-template-rows:1fr}
+.feed-body-inner{overflow:hidden}
+.feed-body-content{padding:4px 4px 20px;display:grid;grid-template-columns:1fr auto;gap:20px;align-items:start}
+.feed-summary{font-size:13px;line-height:1.75;color:var(--text-secondary);max-width:480px;transition:color .35s}
+.feed-meta{display:flex;flex-direction:column;align-items:flex-end;gap:8px}
+.feed-topics{display:flex;flex-wrap:wrap;gap:5px;justify-content:flex-end}
+.feed-topic{font-size:8px;font-weight:500;letter-spacing:.07em;text-transform:uppercase;color:var(--text-secondary);border:1px dotted var(--border);border-radius:2px;padding:2px 6px}
+.feed-cta{display:inline-flex;align-items:center;gap:5px;font-size:9px;font-weight:500;letter-spacing:.06em;text-transform:uppercase;color:var(--text-primary);text-decoration:none;border:1px solid var(--border);border-radius:999px;padding:6px 12px;transition:border-color .2s,background .2s}
+.feed-cta::after{content:'↗';font-size:.85em}
+.feed-cta:hover{border-color:var(--accent)}
+[data-theme="dark"] .feed-cta:hover{border-color:rgba(255,255,255,.6)}
+
+.empty-state{padding:48px 0;color:var(--text-secondary);font-size:11px;letter-spacing:.06em;text-transform:uppercase;opacity:.5;display:none}
+
+@keyframes fadeUp{from{opacity:0;transform:translateY(8px)}to{opacity:1;transform:translateY(0)}}
+@media(prefers-reduced-motion:reduce){header,.pg-hero,.playground-layout{animation:none}}
+</style>
+</head>
+<body>
+<div class="scanlines" aria-hidden="true"></div>
+<div class="frame" aria-hidden="true"></div>
+<div class="page">
+
+  <header>
+    <div class="header-id" id="header-id">ruini.site / 2025</div>
+    <div class="header-right">
+      <nav>
+        <a href="#">Work</a>
+        <a href="#" class="active">Playground</a>
+        <a href="#">About</a>
+        <a href="#">Resume ↗</a>
+      </nav>
+      <button class="theme-btn" id="theme-btn">
+        <span class="dot"></span><span id="theme-label">Dark</span>
+      </button>
+    </div>
+  </header>
+
+  <div class="pg-hero">
+    <h1 class="pg-heading">Playground<sup id="total-count">(7)</sup></h1>
+    <p class="pg-desc">Where endless thoughts from life get physical.</p>
+  </div>
+
+  <div class="playground-layout">
+
+    <!-- Sidebar -->
+    <aside class="sidebar">
+      <!-- Label ABOVE divider -->
+      <div class="filter-header">
+        <span class="filter-slash">/</span>
+        <span class="filter-header-label">Filter</span>
+      </div>
+      <div class="filter-divider"></div>
+
+      <!-- All + Type group BELOW divider -->
+      <div class="tree">
+
+        <!-- All -->
+        <div class="filter-item checked" data-type="all">
+          <div class="filter-checkbox"></div>
+          <span class="filter-label">All <span class="filter-count" id="count-all">(7)</span></span>
+        </div>
+
+        <!-- Type label (no checkbox, no arrow) -->
+        <div class="type-label-row" style="margin-top:10px">
+          <span style="font-size:9px;font-weight:500;letter-spacing:.1em;text-transform:uppercase;color:var(--text-secondary);">Type</span>
+        </div>
+
+        <!-- Indented children -->
+        <div class="type-indent">
+          <div class="filter-item" data-type="interaction">
+            <div class="filter-checkbox"></div>
+            <span class="filter-label">Interaction <span class="filter-count">(3)</span></span>
+          </div>
+          <div class="filter-item" data-type="installation">
+            <div class="filter-checkbox"></div>
+            <span class="filter-label">Installation <span class="filter-count">(2)</span></span>
+          </div>
+          <div class="filter-item" data-type="article">
+            <div class="filter-checkbox"></div>
+            <span class="filter-label">Article <span class="filter-count">(2)</span></span>
+          </div>
+        </div>
+
+      </div>
+    </aside>
+
+    <!-- Main content -->
+    <div class="main-col">
+
+      <div class="section-header">
+        <span class="s-slash">/</span>
+        <span class="s-label" id="section-label">All</span>
+        <span class="s-count" id="section-count">(7)</span>
+      </div>
+
+      <!-- Cards: Interaction + Installation -->
+      <div class="card-grid" id="card-grid">
+
+        <a class="proj-card" data-type="interaction" href="#">
+          <div class="card-img"><div class="card-img-placeholder">img / token-expand</div></div>
+          <div class="card-body">
+            <span class="card-date">2025.03</span>
+            <span class="card-title">Token Expand Interaction</span>
+            <div class="card-tags"><span class="card-tag">Interaction</span><span class="card-tag">Motion</span></div>
+          </div>
+        </a>
+
+        <a class="proj-card" data-type="interaction" href="#">
+          <div class="card-img"><div class="card-img-placeholder">img / emoji-physics</div></div>
+          <div class="card-body">
+            <span class="card-date">2024.11</span>
+            <span class="card-title">Emoji Physics Canvas</span>
+            <div class="card-tags"><span class="card-tag">Interaction</span><span class="card-tag">JavaScript</span></div>
+          </div>
+        </a>
+
+        <a class="proj-card" data-type="interaction" href="#">
+          <div class="card-img"><div class="card-img-placeholder">img / hackathon-01</div></div>
+          <div class="card-body">
+            <span class="card-date">2024.09</span>
+            <span class="card-title">Hackathon — Real-time Collab Whiteboard</span>
+            <div class="card-tags"><span class="card-tag">Interaction</span><span class="card-tag">Vibe coding</span></div>
+          </div>
+        </a>
+
+        <a class="proj-card" data-type="installation" href="#">
+          <div class="card-img"><div class="card-img-placeholder">img / installation-01</div></div>
+          <div class="card-body">
+            <span class="card-date">2024.06</span>
+            <span class="card-title">Tactile Data — Exhibited at [Venue]</span>
+            <div class="card-tags"><span class="card-tag">Installation</span><span class="card-tag">Physical</span></div>
+          </div>
+        </a>
+
+        <a class="proj-card" data-type="installation" href="#">
+          <div class="card-img"><div class="card-img-placeholder">img / installation-02</div></div>
+          <div class="card-body">
+            <span class="card-date">2024.02</span>
+            <span class="card-title">Sound Mapping — Live Exhibition</span>
+            <div class="card-tags"><span class="card-tag">Installation</span><span class="card-tag">Audio</span></div>
+          </div>
+        </a>
+
+      </div>
+
+      <!-- Feed: Article -->
+      <div class="feed-section" id="feed-section">
+        <div class="feed" id="feed">
+
+          <div class="feed-item" data-type="article">
+            <div class="feed-row">
+              <span class="feed-date">2025.01</span>
+              <span class="feed-title">On Designing for Engineers — Not Around Them</span>
+              <span class="feed-tag">Article</span>
+              <span class="feed-expand">+</span>
+            </div>
+            <div class="feed-body"><div class="feed-body-inner"><div class="feed-body-content">
+              <p class="feed-summary">Engineers think in systems, edge cases, and constraints. When designers ignore this, the handoff breaks. This is about what changes when you design with that knowledge from day one.</p>
+              <div class="feed-meta">
+                <div class="feed-topics"><span class="feed-topic">Process</span><span class="feed-topic">Engineering</span><span class="feed-topic">Collaboration</span></div>
+                <a class="feed-cta" href="#">Read</a>
+              </div>
+            </div></div></div>
+          </div>
+
+          <div class="feed-item" data-type="article">
+            <div class="feed-row">
+              <span class="feed-date">2024.08</span>
+              <span class="feed-title">Why AI Products Feel Unfinished — A Pattern Survey</span>
+              <span class="feed-tag">Article</span>
+              <span class="feed-expand">+</span>
+            </div>
+            <div class="feed-body"><div class="feed-body-inner"><div class="feed-body-content">
+              <p class="feed-summary">Most AI products share the same UX debt: streaming states that feel broken, uncertainty not communicated, and multi-step flows that lose the user halfway.</p>
+              <div class="feed-meta">
+                <div class="feed-topics"><span class="feed-topic">AI UX</span><span class="feed-topic">Research</span><span class="feed-topic">Patterns</span></div>
+                <a class="feed-cta" href="#">Read</a>
+              </div>
+            </div></div></div>
+          </div>
+
+        </div>
+      </div>
+
+      <div class="empty-state" id="empty-state">— Nothing here yet —</div>
+
+    </div>
+  </div>
+</div>
+
+<script>
+(function(){
+  const html=document.documentElement,btn=document.getElementById('theme-btn'),lbl=document.getElementById('theme-label'),hid=document.getElementById('header-id');
+  function applyTheme(t){
+    html.dataset.theme=t;
+    lbl.textContent=t==='dark'?'Light':'Dark';
+    hid.textContent=t==='dark'?'[ SYS.V_01 ]':'ruini.site / 2025';
+  }
+  applyTheme('light');
+  btn.addEventListener('click',()=>applyTheme(html.dataset.theme==='dark'?'light':'dark'));
+
+  /* Feed expand */
+  document.querySelectorAll('.feed-item').forEach(item=>{
+    item.querySelector('.feed-row').addEventListener('click',()=>{
+      const wasOpen=item.classList.contains('open');
+      document.querySelectorAll('.feed-item.open').forEach(i=>i.classList.remove('open'));
+      if(!wasOpen)item.classList.add('open');
+    });
+  });
+
+  /* Multi-select filter */
+  const filterItems=document.querySelectorAll('.filter-item');
+  const allItem=document.querySelector('[data-type="all"]');
+  let activeTypes=new Set(['all']);
+
+  function renderContent(){
+    const showAll=activeTypes.has('all');
+    const cards=document.querySelectorAll('.proj-card');
+    const feedItems=document.querySelectorAll('.feed-item');
+    let visible=0;
+    let anyCard=false,anyFeed=false;
+
+    cards.forEach(card=>{
+      const show=showAll||activeTypes.has(card.dataset.type);
+      card.style.display=show?'':'none';
+      if(show){visible++;anyCard=true;}
+    });
+    document.getElementById('card-grid').style.display=anyCard?'':'none';
+
+    feedItems.forEach(item=>{
+      const show=showAll||activeTypes.has(item.dataset.type);
+      item.style.display=show?'':'none';
+      if(show){visible++;anyFeed=true;}
+    });
+    document.getElementById('feed-section').style.display=anyFeed?'':'none';
+
+    document.getElementById('empty-state').style.display=visible===0?'block':'none';
+    document.getElementById('section-count').textContent=`(${visible})`;
+    document.getElementById('total-count').textContent=`(${visible})`;
+
+    const labels=[...activeTypes].filter(t=>t!=='all');
+    const sl=document.getElementById('section-label');
+    sl.textContent=showAll||!labels.length?'All':labels.map(l=>l.charAt(0).toUpperCase()+l.slice(1)).join(' + ');
+  }
+
+  filterItems.forEach(item=>{
+    item.addEventListener('click',()=>{
+      const type=item.dataset.type;
+      if(type==='all'){
+        activeTypes=new Set(['all']);
+        filterItems.forEach(fi=>fi.classList.remove('checked'));
+        allItem.classList.add('checked');
+      } else {
+        if(activeTypes.has('all')){activeTypes.delete('all');allItem.classList.remove('checked');}
+        if(activeTypes.has(type)){
+          activeTypes.delete(type);
+          item.classList.remove('checked');
+          if(activeTypes.size===0){activeTypes.add('all');allItem.classList.add('checked');}
+        } else {
+          activeTypes.add(type);
+          item.classList.add('checked');
+        }
+      }
+      renderContent();
+    });
+  });
+
+  renderContent();
+})();
+</script>
+</body>
+</html>

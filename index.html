@@ -1,0 +1,681 @@
+<!DOCTYPE html>
+<html lang="en" data-theme="light">
+
+<head>
+  <meta charset="UTF-8">
+  <meta name="viewport" content="width=device-width, initial-scale=1.0">
+  <meta name="description" content="Ruini — AI product designer for complex systems.">
+  <title>Ruini.site</title>
+  <script>document.documentElement.dataset.theme = localStorage.getItem('ruini-theme') || 'light';</script>
+  <link rel="preconnect" href="https://fonts.googleapis.com">
+  <link rel="preconnect" href="https://fonts.gstatic.com" crossorigin>
+  <link href="https://fonts.googleapis.com/css2?family=IBM+Plex+Mono:ital,wght@0,400;0,500;0,600;1,400&display=swap"
+    rel="stylesheet">
+  <link rel="stylesheet" href="css/tokens.css">
+  <style>
+    :root {
+      --radius: 16px;
+    }
+    *,
+    *::before,
+    *::after {
+      box-sizing: border-box;
+      margin: 0;
+      padding: 0
+    }
+
+    html,
+    body {
+      height: 100%
+    }
+
+    body {
+      font-family: var(--font);
+      background: var(--bg);
+      background-image: radial-gradient(circle, var(--bg-dot) 1px, transparent 1px);
+      background-size: 24px 24px;
+      color: var(--text-primary);
+      -webkit-font-smoothing: antialiased;
+      transition: background-color .35s, color .35s
+    }
+
+    .scanlines {
+      position: fixed;
+      inset: 0;
+      pointer-events: none;
+      z-index: 50;
+      background: linear-gradient(rgba(18, 16, 16, 0) 50%, rgba(0, 0, 0, 0.18) 50%), linear-gradient(90deg, rgba(255, 0, 0, 0.04), rgba(0, 255, 0, 0.015), rgba(0, 0, 255, 0.04));
+      background-size: 100% 4px, 3px 100%;
+      opacity: 0;
+      transition: opacity .35s
+    }
+
+    [data-theme="dark"] .scanlines {
+      opacity: 1
+    }
+
+    .frame {
+      position: fixed;
+      inset: 18px;
+      pointer-events: none;
+      z-index: 40;
+      border: 1px solid rgba(255, 255, 255, 0.05);
+      opacity: 0;
+      transition: opacity .35s
+    }
+
+    [data-theme="dark"] .frame {
+      opacity: 1
+    }
+
+    .frame::before,
+    .frame::after {
+      content: '';
+      position: absolute;
+      width: 26px;
+      height: 26px
+    }
+
+    .frame::before {
+      top: -1px;
+      left: -1px;
+      border-top: 1.5px solid var(--accent);
+      border-left: 1.5px solid var(--accent)
+    }
+
+    .frame::after {
+      bottom: -1px;
+      right: -1px;
+      border-bottom: 1.5px solid var(--accent);
+      border-right: 1.5px solid var(--accent)
+    }
+
+    .page {
+      max-width: 1440px;
+      margin: 0 auto;
+      padding: 40px 80px;
+      display: flex;
+      flex-direction: column
+    }
+
+
+
+    .hero {
+      display: flex;
+      flex-direction: column;
+      justify-content: center;
+      max-width: 880px;
+      padding: 10vh 0 12vh
+    }
+
+    .intro {
+      font-size: clamp(20px, 2.1vw, 30px);
+      font-weight: 400;
+      line-height: 1.65;
+      letter-spacing: -.01em;
+      color: var(--text-primary);
+      transition: color .35s;
+      animation: fadeUp .6s var(--ease-out) .15s both
+    }
+
+    .intro::after {
+      content: '_';
+      color: var(--accent);
+      animation: blink 1s step-end infinite;
+      opacity: 0;
+      transition: opacity .35s;
+      margin-left: 2px
+    }
+
+    [data-theme="dark"] .intro::after {
+      opacity: 1
+    }
+
+    @keyframes blink {
+
+      from,
+      to {
+        opacity: 1
+      }
+
+      50% {
+        opacity: 0
+      }
+    }
+
+    .token {
+      display: inline;
+      cursor: pointer;
+      white-space: normal
+    }
+
+    .token-inner {
+      display: inline;
+      background: var(--token-bg);
+      border: 1px solid var(--border);
+      border-radius: 0;
+      padding: 2px 8px 3px;
+      transition: background .15s, border-color .15s, box-shadow .15s;
+      -webkit-box-decoration-break: clone;
+      box-decoration-break: clone
+    }
+
+    .token:hover .token-inner {
+      background: var(--token-hover);
+      border-color: var(--border-hover)
+    }
+
+    [data-theme="dark"] .token:hover .token-inner {
+      box-shadow: 0 0 12px rgba(255, 255, 255, 0.14)
+    }
+
+    .token.active .token-inner {
+      background: var(--token-active-bg);
+      border-color: var(--border-hover)
+    }
+
+    [data-theme="dark"] .token.active .token-inner {
+      box-shadow: 0 0 18px rgba(255, 255, 255, 0.18)
+    }
+
+    .t-bracket {
+      color: var(--text-secondary);
+      font-weight: 400;
+      font-size: .84em;
+      user-select: none;
+      transition: color .15s, opacity .15s
+    }
+
+    .token.active .t-bracket {
+      color: var(--token-active-text);
+      opacity: .4
+    }
+
+    .t-label {
+      font-weight: 400;
+      transition: color .15s
+    }
+
+    .token.active .t-label {
+      color: var(--token-active-text)
+    }
+
+    .t-exp {
+      display: inline-flex;
+      max-width: 0;
+      overflow: hidden;
+      opacity: 0;
+      white-space: nowrap;
+      font-weight: 400;
+      font-style: italic;
+      color: var(--token-exp-color);
+      /* Collapse (Leave) transition: 0.15s fade out with fast-out slow-in curve */
+      transition: max-width 1s cubic-bezier(0.22, 1, 0.36, 1), opacity 0.15s cubic-bezier(0.22, 1, 0.36, 1), color .35s
+    }
+
+    .token.active .t-exp {
+      max-width: 700px;
+      opacity: 1;
+      padding-right: 4px;
+      /* Expand (Enter) transition: 1s width, 0.3s fade in with 0.05s delay */
+      transition: max-width 1s cubic-bezier(0.22, 1, 0.36, 1), opacity 0.3s ease-out 0.05s, color .35s, padding-right 0.3s ease-out
+    }
+
+    [data-theme="dark"] .token.active .t-exp {
+      color: #4a5aff
+    }
+
+
+
+    /* Work section */
+    .section-header {
+      display: flex;
+      align-items: baseline;
+      gap: 8px;
+      padding: 18px 0;
+      border-top: none;
+      border-bottom: 1px solid var(--border);
+      border-left-color: transparent;
+      border-right-color: transparent;
+      transition: border-color .35s
+    }
+
+    .section-slash {
+      font-size: 11px;
+      font-weight: 400;
+      color: var(--text-secondary);
+      transition: color .35s
+    }
+
+    .section-label {
+      font-size: 10px;
+      font-weight: 500;
+      letter-spacing: .14em;
+      text-transform: uppercase;
+      color: var(--text-secondary);
+      transition: color .35s
+    }
+
+    .section-count {
+      font-size: 11px;
+      font-weight: 400;
+      color: var(--text-secondary);
+      opacity: .6;
+      transition: color .35s;
+      vertical-align: super;
+      font-size: .7em;
+      margin-left: 2px
+    }
+
+    .work-section {
+      padding-bottom: 80px
+    }
+
+    .project-item {
+      border-top: 1px solid var(--border);
+      padding: 28px 0;
+      transition: border-color .35s;
+      position: relative
+    }
+
+    .project-item:last-child {
+      border-bottom: 1px solid var(--border)
+    }
+
+    .project-row-top {
+      display: flex;
+      align-items: baseline;
+      justify-content: space-between;
+      margin-bottom: 20px
+    }
+
+    .project-meta-left {
+      display: flex;
+      align-items: baseline;
+      gap: 24px
+    }
+
+    .project-num {
+      font-size: 11px;
+      font-weight: 500;
+      color: var(--text-secondary);
+      letter-spacing: .06em;
+      transition: color .35s;
+      min-width: 20px
+    }
+
+    .project-name {
+      font-size: clamp(22px, 2.6vw, 36px);
+      font-weight: 400;
+      color: var(--text-primary);
+      letter-spacing: -.02em;
+      line-height: 1.2;
+      max-width: 340px;
+      transition: color .35s, transform .3s var(--ease-out)
+    }
+
+    .project-item:hover .project-name {
+      transform: translateX(4px)
+    }
+
+    .project-arrow {
+      font-size: 24px;
+      color: var(--text-secondary);
+      text-decoration: none;
+      transition: color .2s, transform .35s var(--ease-out);
+      line-height: 1;
+      display: inline-block
+    }
+    
+    .item-link-overlay {
+      position: absolute;
+      inset: 0;
+      z-index: 10;
+    }
+
+    .project-item:hover .project-arrow {
+      color: var(--text-primary);
+      transform: rotate(45deg)
+    }
+
+    [data-theme="dark"] .project-item:hover .project-arrow {
+      color: #fff
+    }
+
+    .project-body {
+      display: grid;
+      grid-template-columns: 3fr 2fr;
+      gap: 28px;
+      align-items: start
+    }
+
+    .project-impact-img {
+      width: 100%;
+      aspect-ratio: 16/9;
+      border-radius: var(--radius);
+      overflow: hidden;
+      background: var(--img-bg);
+      margin-top: 16px
+    }
+
+    .project-impact-img img {
+      width: 100%;
+      height: 100%;
+      object-fit: cover;
+      display: block
+    }
+
+    .project-image {
+      width: 100%;
+      aspect-ratio: 16/10;
+      border-radius: var(--radius);
+      overflow: hidden;
+      background: transparent;
+      position: relative
+    }
+
+    .project-image img {
+      width: 100%;
+      height: 100%;
+      object-fit: cover;
+      display: block;
+      transition: transform .4s cubic-bezier(0.16, 1, 0.3, 1)
+    }
+
+    .project-item:hover .project-image img {
+      transform: scale(1.025)
+    }
+
+    .project-img-ph {
+      width: 100%;
+      height: 100%;
+      display: flex;
+      align-items: center;
+      justify-content: center;
+      font-size: 9px;
+      letter-spacing: .1em;
+      text-transform: uppercase;
+      color: rgba(255, 255, 255, 0.18);
+      font-family: var(--font)
+    }
+
+    .project-info {
+      display: flex;
+      flex-direction: column;
+      gap: 10px;
+      padding-top: 4px
+    }
+
+    .project-date {
+      font-size: 11px;
+      font-weight: 500;
+      color: var(--text-secondary);
+      letter-spacing: .04em;
+      transition: color .35s
+    }
+
+    .project-desc {
+      font-size: clamp(14px, 1.5vw, 19px);
+      font-weight: 400;
+      color: var(--text-primary);
+      line-height: 1.5;
+      letter-spacing: -.01em;
+      transition: color .35s
+    }
+
+    .project-tags {
+      display: flex;
+      flex-wrap: wrap;
+      gap: 7px;
+      margin-top: 6px
+    }
+
+    .tag {
+      font-size: 9px;
+      font-weight: 500;
+      letter-spacing: .06em;
+      text-transform: uppercase;
+      color: var(--text-secondary);
+      border: 1px solid var(--border);
+      border-radius: 4px;
+      padding: 2px 8px;
+      transition: border-color .2s, color .2s
+    }
+
+    .project-item:hover .tag {
+      border-color: var(--border-hover)
+    }
+
+    @keyframes fadeUp {
+      from {
+        opacity: 0;
+        transform: translateY(10px)
+      }
+
+      to {
+        opacity: 1;
+        transform: translateY(0)
+      }
+    }
+
+    @media(prefers-reduced-motion:reduce) {
+
+      header,
+      .intro,
+      .ctas {
+        animation: none
+      }
+
+      .t-exp {
+        transition: none
+      }
+    }
+
+    .projectile {
+      position: fixed;
+      font-size: 56px;
+      line-height: 1;
+      pointer-events: none;
+      will-change: transform, opacity;
+      user-select: none;
+      z-index: 200
+    }
+
+    @media(max-width:960px) {
+      .page {
+        padding: 32px
+      }
+
+      .project-body {
+        grid-template-columns: 1fr
+      }
+    }
+
+    @media(max-width:640px) {
+      nav {
+        display: none
+      }
+
+      .page {
+        padding: 20px
+      }
+    }
+  </style>
+</head>
+
+<body>
+  <div class="scanlines" aria-hidden="true"></div>
+  <div class="frame" aria-hidden="true"></div>
+  <div class="page">
+    <header>
+      <a href="index.html" class="header-logo-link">
+        <img src="Assets/system/brand/logo.svg" alt="ruini.site" class="logo-img">
+      </a>
+      <div class="header-right">
+        <nav>
+          <a href="work/index.html" class="active">Work</a>
+          <a href="playground/index.html">Playground</a>
+          <a href="about/index.html">About</a>
+        </nav>
+        <button class="theme-btn" id="theme-btn" aria-label="Toggle dark mode">
+          <svg class="cat-icon" viewBox="0 0 455 549" preserveAspectRatio="xMidYMid meet" fill="currentColor">
+            <g transform="translate(0.000000,549.000000) scale(0.100000,-0.100000)" stroke="none">
+              <path
+                d="M808 5153 l-3 -67 -56 3 c-34 1 -60 -2 -64 -9 -6 -10 -11 -51 -14 -112 -1 -15 -11 -18 -66 -18 l-65 0 0 -65 0 -65 -65 0 -64 0 -3 -132 -3 -133 -67 -3 -68 -3 0 -464 0 -464 68 -3 67 -3 3 -132 3 -133 64 0 65 0 0 -65 0 -65 64 0 c42 0 65 -4 68 -12 2 -7 4 -69 4 -138 l-1 -125 -67 -3 -68 -3 -2 -332 -3 -332 -62 -3 -63 -3 -2 -262 -3 -262 -67 -3 -68 -3 0 -329 0 -329 68 -3 67 -3 3 -68 3 -68 127 3 127 3 3 68 3 67 64 0 64 0 3 133 3 132 63 -1 62 -1 0 133 0 134 70 0 69 0 3 67 3 68 65 0 65 0 3 -67 3 -68 134 0 135 0 0 -65 0 -65 65 0 65 0 0 -535 0 -535 65 0 64 0 3 -68 3 -67 195 0 195 0 3 67 3 68 64 0 65 0 0 265 0 264 68 3 67 3 3 203 2 203 198 -2 197 -2 3 66 3 67 269 0 269 0 3 -67 3 -68 60 0 60 0 3 -67 3 -68 64 0 65 0 0 -65 0 -64 133 -3 132 -3 5 -65 5 -65 127 -3 127 -3 3 68 3 68 68 3 67 3 0 194 0 194 -67 3 -68 3 -3 133 -3 132 -64 0 -65 0 0 135 0 134 -67 3 -68 3 -3 127 -3 127 -62 3 -62 3 0 69 0 70 62 -3 62 -2 3 68 3 68 68 3 67 3 0 529 0 530 -65 0 -65 0 -2 533 -3 532 -197 3 -198 2 0 -65 0 -65 -65 0 -65 0 0 -65 0 -65 -335 0 c-261 0 -335 3 -335 13 -1 6 -2 64 -3 127 l-2 115 -67 3 -67 3 -3 67 -3 67 -195 0 -195 0 -3 -67 -3 -68 -64 0 -65 0 0 -133 0 -133 -65 4 -65 4 0 -331 c0 -269 -3 -333 -14 -337 -7 -3 -127 -6 -267 -7 l-254 -2 -3 -67 -3 -67 -132 -3 -132 -3 -3 -62 -3 -63 -64 0 -65 0 0 65 0 65 -70 0 -70 0 0 135 0 135 -65 0 -65 0 0 270 0 270 65 0 65 0 0 135 0 135 70 0 70 0 0 65 0 65 200 0 200 0 0 -200 0 -200 130 0 129 0 3 68 3 67 68 3 67 3 0 194 0 195 -70 0 -70 0 0 69 0 68 -62 -1 -63 0 -3 67 -3 67 -329 0 -329 0 -3 -67z m2002 -1673 l0 -270 -64 0 c-49 0 -65 4 -70 16 -8 21 -8 509 1 517 3 4 35 7 70 7 l63 0 0 -270z m800 0 l0 -270 -65 0 c-45 0 -65 4 -65 13 0 6 0 125 -1 262 -1 138 -1 253 0 258 0 4 30 7 66 7 l65 0 0 -270z" />
+            </g>
+          </svg>
+        </button>
+      </div>
+    </header>
+
+    <section class="hero">
+      <p class="intro">
+        I'm <span class="token"><span class="token-inner"><span class="t-bracket t-bl">[</span><span
+              class="t-label">Ruini</span><span class="t-exp">, pronounced /ˈruːiːni/ 🌧</span><span
+              class="t-bracket t-br">]</span></span></span>, an AI product designer for <span class="token"><span
+            class="token-inner"><span class="t-bracket t-bl">[</span><span class="t-label">complex systems</span><span
+              class="t-exp">—like AI agents, industrial software, and multi-step workflows</span><span
+              class="t-bracket t-br">]</span></span></span>. I recently worked at <span class="token"><span
+            class="token-inner"><span class="t-bracket t-bl">[</span><span class="t-label">Orthogonal</span><span
+              class="t-exp">, a German startup building for engineers</span><span
+              class="t-bracket t-br">]</span></span></span>, shaping an <span class="token"><span
+            class="token-inner"><span class="t-bracket t-bl">[</span><span class="t-label">AI notebook for
+              engineers</span><span class="t-exp">—to write and iterate inside workflows</span><span
+              class="t-bracket t-br">]</span></span></span> and existing product experiences. I design with <span
+          class="token"><span class="token-inner"><span class="t-bracket t-bl">[</span><span
+              class="t-label">taste</span><span class="t-exp">—grounded in product principles and small 'aha'
+              moments</span><span class="t-bracket t-br">]</span></span></span>—and a sense of <span
+          class="token js-play"><span class="token-inner"><span class="t-bracket t-bl">[</span><span
+              class="t-label">play</span><span class="t-bracket t-br">]</span></span></span>.
+      </p>
+    </section>
+
+    <section class="work-section">
+      <div class="section-header">
+        <span class="section-slash">/</span>
+        <span class="section-label">Recent work</span>
+        <span class="section-count">(3)</span>
+      </div>
+
+      <article class="project-item">
+        <a href="work/ode-paper/index.html" class="item-link-overlay" aria-label="View ODE Paper"></a>
+        <div class="project-row-top">
+          <div class="project-meta-left">
+            <span class="project-num">00</span>
+            <h2 class="project-name">ODE Paper</h2>
+          </div>
+          <span class="project-arrow" aria-hidden="true">↗</span>
+        </div>
+        <div class="project-body">
+          <div class="project-image">
+            <img src="Assets/Cases/ode-paper/hero/cover.png" alt="ODE Paper Cover" />
+          </div>
+          <div class="project-info">
+            <span class="project-date">2025.05–2025.12</span>
+            <p class="project-desc">Build 0→1 Interactive Analysis Notebook for Engineers</p>
+            <div class="project-tags">
+              <span class="tag">AI Product Design</span>
+              <span class="tag">SaaS</span>
+            </div>
+            <div class="project-impact-img">
+              <div class="project-img-ph">impact / ode-paper</div>
+            </div>
+          </div>
+        </div>
+      </article>
+
+      <article class="project-item">
+        <a href="work/ode-plus/index.html" class="item-link-overlay" aria-label="View ODE Plus"></a>
+        <div class="project-row-top">
+          <div class="project-meta-left">
+            <span class="project-num">01</span>
+            <h2 class="project-name">ODE Plus</h2>
+          </div>
+          <span class="project-arrow" aria-hidden="true">↗</span>
+        </div>
+        <div class="project-body">
+          <div class="project-image">
+            <div class="project-img-ph">img / ode-plus</div>
+          </div>
+          <div class="project-info">
+            <span class="project-date">2024.06–Now</span>
+            <p class="project-desc">Redesign Design System to make complex tools easier to learn</p>
+            <div class="project-tags">
+              <span class="tag">Design System</span>
+              <span class="tag">B2B</span>
+            </div>
+            <div class="project-impact-img">
+              <div class="project-img-ph">impact / ode-plus</div>
+            </div>
+          </div>
+        </div>
+      </article>
+
+      <article class="project-item">
+        <a href="work/lemonbox/index.html" class="item-link-overlay" aria-label="View Lemonbox"></a>
+        <div class="project-row-top">
+          <div class="project-meta-left">
+            <span class="project-num">02</span>
+            <h2 class="project-name">Lemonbox</h2>
+          </div>
+          <span class="project-arrow" aria-hidden="true">↗</span>
+        </div>
+        <div class="project-body">
+          <div class="project-image">
+            <img src="Assets/Cases/lemonbox/hero/cover.png" alt="Lemonbox Cover" />
+          </div>
+          <div class="project-info">
+            <span class="project-date">2024.01–2024.02</span>
+            <p class="project-desc">AI Vitamin Pack Customization Sharing Journey</p>
+            <div class="project-tags">
+              <span class="tag">UX Design</span>
+              <span class="tag">B2C</span>
+            </div>
+            <div class="project-impact-img">
+              <div class="project-img-ph">impact / lemonbox</div>
+            </div>
+          </div>
+        </div>
+      </article>
+
+      <!-- Thermomix is currently hidden from front-end
+      <article class="project-item" style="display: none;">
+        <div class="project-row-top">
+          <div class="project-meta-left">
+            <span class="project-num">03</span>
+            <h2 class="project-name">Thermomix</h2>
+          </div>
+          <a class="project-arrow" href="work/thermomix/index.html" aria-label="Open Thermomix">↗</a>
+        </div>
+        <div class="project-body">
+          <div class="project-image">
+            <div class="project-img-ph">img / thermomix</div>
+          </div>
+          <div class="project-info">
+            <span class="project-date">2019–2020</span>
+            <p class="project-desc">Cooking experience redesign.</p>
+            <div class="project-tags">
+              <span class="tag">UX Design</span>
+            </div>
+          </div>
+        </div>
+      </article>
+      -->
+    </section>
+  </div>
+
+  <script>
+    (function () {
+      const tokens = document.querySelectorAll('.token');
+      tokens.forEach(tok => tok.addEventListener('click', e => { e.stopPropagation(); tok.classList.toggle('active'); }));
+      const EMOJIS = ['🎹', '🧗', '🥐', '🪡', '🥁', '🎨', '🧩', '✨', '🌧', '💡', '🔬', '🛠', '🌀', '🎯', '🫧', '🌊', '🪴', '⚡'];
+      let particles = [], raf = null; const G = 0.38, FR = 0.982;
+      function burst(ox, oy) { for (let i = 0; i < 10; i++) { const el = document.createElement('span'); el.className = 'projectile'; el.textContent = EMOJIS[Math.floor(Math.random() * EMOJIS.length)]; el.style.left = ox + 'px'; el.style.top = oy + 'px'; document.body.appendChild(el); const a = (Math.PI * 2 * i / 10) + (Math.random() * .55 - .27), s = 8 + Math.random() * 9; particles.push({ el, x: ox, y: oy, vx: Math.cos(a) * s, vy: Math.sin(a) * s - 3.5, rot: Math.random() * 360, rotV: (Math.random() - .5) * 14, life: 1 }); } if (!raf) tick(); }
+      function tick() { particles = particles.filter(p => { p.vy += G; p.vx *= FR; p.vy *= FR; p.x += p.vx; p.y += p.vy; p.rot += p.rotV; p.life -= .011; if (p.life <= 0) { p.el.remove(); return false; } p.el.style.transform = `translate(${p.x - parseFloat(p.el.style.left)}px,${p.y - parseFloat(p.el.style.top)}px) rotate(${p.rot}deg)`; p.el.style.opacity = Math.min(1, p.life * 2); return true; }); raf = particles.length ? requestAnimationFrame(tick) : null; }
+      document.querySelector('.js-play').addEventListener('click', e => { const r = e.currentTarget.getBoundingClientRect(); burst(r.left + r.width / 2, r.top + r.height / 2); });
+    })();
+  </script>
+  <script src="Assets/system/js/global-ui.js"></script>
+</body>
+
+</html>

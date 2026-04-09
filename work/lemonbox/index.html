@@ -1,0 +1,298 @@
+<!DOCTYPE html>
+<html lang="en" data-theme="light">
+<head>
+  <meta charset="UTF-8">
+  <meta name="viewport" content="width=device-width, initial-scale=1.0">
+  <title>Lemonbox — Case Study</title>
+  <link rel="stylesheet" href="../../css/tokens.css">
+  <link rel="stylesheet" href="../../css/global-ui.css">
+  <script>
+    (function(){var t=localStorage.getItem('ruini-theme');if(t)document.documentElement.setAttribute('data-theme',t)})();
+  </script>
+  <style>
+    *, *::before, *::after { box-sizing: border-box; margin: 0; padding: 0; }
+    html, body { height: 100%; scroll-behavior: smooth; }
+    body {
+      font-family: var(--font);
+      background: var(--bg);
+      background-image: radial-gradient(circle, var(--bg-dot) 1px, transparent 1px);
+      background-size: 24px 24px;
+      color: var(--text-primary);
+      -webkit-font-smoothing: antialiased;
+      transition: background-color .35s, color .35s;
+    }
+
+    /* ─── Page-Level Tokens ─── */
+    :root {
+      --cs-section-bg: #ffffff;
+      --cs-card-bg: #FAFAFA;
+      --cs-card-border: rgba(0,0,0,0.03);
+      --cs-icon-bg: rgba(242,242,245,0.5);
+      --cs-callout-bg: #FAFAFA;
+      --cs-img-inner-bg: #ffffff;
+      --cs-section-divider: rgba(0,0,0,0.06);
+      --cs-gradient-orange: rgba(234,123,72,0.10);
+      --cs-gradient-teal: rgba(33,114,171,0.05);
+      --cs-logo-bg: #ffffff;
+      --cs-logo-shadow: rgba(0,0,0,0.05);
+      --cs-logo-shadow-strong: rgba(0,0,0,0.10);
+      --cs-pill-border: #CCCCCC;
+      --cs-quote-border: var(--text-primary);
+    }
+    [data-theme="dark"] {
+      --cs-section-bg: #111318;
+      --cs-card-bg: rgba(255,255,255,0.04);
+      --cs-card-border: var(--border);
+      --cs-icon-bg: rgba(255,255,255,0.06);
+      --cs-callout-bg: rgba(255,255,255,0.04);
+      --cs-img-inner-bg: rgba(255,255,255,0.04);
+      --cs-section-divider: var(--border);
+      --cs-gradient-orange: rgba(234,123,72,0.06);
+      --cs-gradient-teal: rgba(33,114,171,0.04);
+      --cs-logo-bg: rgba(255,255,255,0.08);
+      --cs-logo-shadow: rgba(0,0,0,0.3);
+      --cs-logo-shadow-strong: rgba(0,0,0,0.4);
+      --cs-pill-border: var(--border);
+      --cs-quote-border: rgba(255,255,255,0.6);
+    }
+
+    .page { max-width: 1440px; margin: 0 auto; padding: 40px 80px; }
+
+    /* ─── Hero ─── */
+    .cs-hero { margin-top: 40px; display: flex; flex-direction: column; gap: 48px; }
+    .cs-cover { width: 100%; display: flex; justify-content: center; }
+    .cs-cover img { max-width: 1280px; width: 100%; max-height: 546px; object-fit: cover; display: block; border-radius: var(--radius); }
+    .cs-split { display: flex; gap: 72px; }
+
+    /* Title column */
+    .cs-title-col { width: 380px; flex-shrink: 0; display: flex; flex-direction: column; gap: 16px; }
+    .cs-title { font-size: clamp(32px, 3.5vw, 48px); font-weight: 400; line-height: 1.08; letter-spacing: -0.8px; }
+    .cs-subtitle { font-size: 16px; font-weight: 500; color: var(--text-secondary); line-height: 1.2; }
+
+    /* Info column */
+    .cs-info-col { flex: 1; display: flex; flex-direction: column; gap: 24px; }
+    .cs-brief-label { font-size: 12px; font-weight: 400; text-transform: uppercase; color: var(--text-secondary); }
+    .cs-brief { font-size: 16px; font-weight: 500; color: var(--text-secondary); line-height: 1.6; letter-spacing: -0.18px; }
+    .cs-divider { width: 100%; height: 1px; background: var(--cs-card-border); }
+    .cs-meta-grid { display: flex; flex-wrap: wrap; justify-content: space-between; gap: 16px; }
+    .cs-meta-item { display: flex; flex-direction: column; gap: 4px; }
+    .cs-meta-label { font-size: 12px; font-weight: 400; text-transform: uppercase; color: var(--text-secondary); }
+    .cs-meta-val { font-size: 14px; font-weight: 500; }
+    .cs-status-pill { display: inline-flex; padding: 2px 8px; background: var(--text-primary); color: var(--bg); font-size: 12px; font-weight: 600; text-transform: uppercase; letter-spacing: 0.05em; text-decoration: none; width: fit-content; transition: opacity .2s; cursor: default; }
+    .cs-status-pill:hover { opacity: 0.9; }
+
+    /* ─── Body Layout (TOC + Main) ─── */
+    .cs-body-wrapper { background: var(--cs-section-bg); margin: 80px -80px 0 -80px; padding: 80px; transition: background .35s; }
+    .cs-body { display: grid; grid-template-columns: 160px 1fr; gap: 40px; max-width: 1440px; margin: 0 auto; }
+
+    /* ─── TOC Sidebar ─── */
+    .cs-toc { position: sticky; top: 80px; align-self: start; display: flex; flex-direction: column; gap: 2px; padding: 64px 0 0 12px; border-left: 1px dotted var(--border); transition: border-color .35s; }
+    .cs-toc-link {
+      font-size: 11px; font-weight: 400; letter-spacing: 0.04em;
+      color: var(--text-secondary); text-decoration: none;
+      padding: 6px 0; transition: color .15s;
+    }
+    .cs-toc-link:hover { color: var(--text-primary); }
+    .cs-toc-link.active { color: var(--text-primary); font-weight: 500; }
+
+    /* ─── Main Content ─── */
+    .cs-main { display: flex; flex-direction: column; }
+
+    /* Section wrapper */
+    .cs-section {
+      padding: 64px 0;
+      display: flex; flex-direction: column; gap: 48px;
+    }
+    .cs-section + .cs-section { border-top: 1px dotted var(--cs-section-divider); }
+
+    /* Section header */
+    .cs-heading { font-size: clamp(24px, 2.5vw, 36px); font-weight: 400; line-height: 1.08; letter-spacing: -0.8px; }
+    .cs-desc { font-size: 16px; font-weight: 500; line-height: 1.5; letter-spacing: -0.18px; color: var(--text-secondary); max-width: 600px; }
+
+    /* ─── Cards ─── */
+    .cs-card {
+      background: var(--cs-card-bg);
+      border: 1px solid var(--cs-card-border);
+      border-radius: var(--radius);
+      padding: 24px; display: flex; flex-direction: column; gap: 12px;
+      transition: background .35s, border-color .35s;
+    }
+    .cs-card-title { font-size: 18px; font-weight: 600; line-height: 1.39; }
+    .cs-card-desc { font-size: 14px; font-weight: 500; line-height: 1.45; color: var(--text-secondary); }
+
+    /* Card image area */
+    .cs-card-img { width: 100%; height: auto; background: var(--cs-img-inner-bg); overflow: hidden; margin-top: auto; padding: 12px; border-radius: 8px; }
+    .cs-card-img img { width: 100%; height: 100%; object-fit: contain; border-radius: 4px; }
+
+    /* ─── Grids ─── */
+    .cs-grid-2 { display: flex; gap: 24px; }
+    .cs-grid-2 > * { flex: 1; }
+    .cs-grid-3 { display: flex; gap: 24px; }
+    .cs-grid-3 > * { flex: 1; display: flex; flex-direction: column; }
+
+    /* ─── Split Layout ─── */
+    .cs-row-split { display: flex; gap: 48px; background: var(--cs-card-bg); padding: 48px; border-radius: var(--radius); align-items: center; }
+    .cs-row-text { display: flex; flex-direction: column; gap: 24px; flex: 1; }
+    .cs-row-img { flex: 1.2; overflow: hidden; border-radius: 12px; }
+    .cs-row-img img { width: 100%; height: auto; display: block; }
+
+    /* ─── Callout ─── */
+    .cs-callout { background: var(--cs-callout-bg); padding: 64px; display: flex; flex-direction: column; gap: 16px; border-radius: var(--radius); border: 1px solid var(--cs-card-border); }
+    .cs-callout-title { font-size: clamp(24px, 3vw, 32px); font-weight: 700; line-height: 1.15; }
+    .cs-callout-desc { font-size: 16px; line-height: 1.6; color: var(--text-secondary); font-weight: 500; }
+
+    /* ─── Impact ─── */
+    .cs-impact-card { background: var(--text-primary); color: var(--bg); padding: 64px; border-radius: var(--radius); display: flex; flex-direction: column; gap: 32px; position: relative; overflow: hidden; }
+    .cs-impact-title { font-size: clamp(24px, 3vw, 36px); font-weight: 600; line-height: 1.2; }
+    .cs-impact-text { font-size: 18px; line-height: 1.6; opacity: 0.9; max-width: 800px; }
+    .cs-stats-tag { display: inline-flex; background: rgba(255,255,255,0.1); padding: 8px 16px; border-radius: 32px; font-size: 14px; font-weight: 600; border: 1px solid rgba(255,255,255,0.2); }
+
+    /* ─── Responsive ─── */
+    @media (max-width: 960px) {
+      .page { padding: 32px; }
+      .cs-split { flex-direction: column; gap: 40px; }
+      .cs-title-col { width: 100%; }
+      .cs-body { grid-template-columns: 1fr; }
+      .cs-toc { display: none; }
+      .cs-section { padding: 40px 24px; }
+      .cs-row-split { flex-direction: column; padding: 24px; }
+      .cs-grid-2, .cs-grid-3 { flex-direction: column; }
+      .cs-callout { padding: 32px; }
+      .cs-impact-card { padding: 40px 24px; }
+    }
+  </style>
+</head>
+<body>
+<div class="page">
+
+  <!-- ═══ HERO ═══ -->
+  <article class="cs-hero" id="top">
+    <div class="cs-cover">
+      <img src="../../Assets/Cases/lemonbox/hero/cover.png" alt="Lemonbox Cover">
+    </div>
+
+    <div class="cs-split">
+      <div class="cs-title-col">
+        <h1 class="cs-title">Lemonbox</h1>
+        <h2 class="cs-subtitle">AI Vitamin Pack Customization Sharing</h2>
+      </div>
+      <div class="cs-info-col">
+        <span class="cs-brief-label">(brief)</span>
+        <p class="cs-brief">Optimize the AI Vitamin Pack Customization Sharing Journey. I redesigned the end-to-end user sharing experience to streamline the questionnaire process and increase user motivation.</p>
+        <div class="cs-divider"></div>
+        <div class="cs-meta-grid">
+          <div class="cs-meta-item">
+            <span class="cs-meta-label">Timeline</span>
+            <span class="cs-meta-val">2024.01 - 2024.02</span>
+          </div>
+          <div class="cs-meta-item">
+            <span class="cs-meta-label">Tools</span>
+            <span class="cs-meta-val">Figma, Google Workspace</span>
+          </div>
+          <div class="cs-meta-item">
+            <span class="cs-meta-label">Role</span>
+            <span class="cs-meta-val">UX/UI Designer</span>
+          </div>
+          <div class="cs-meta-item">
+            <span class="cs-meta-label">Status</span>
+            <div class="cs-status-pill">Released</div>
+          </div>
+        </div>
+        <div class="cs-divider"></div>
+      </div>
+    </div>
+  </article>
+
+  <!-- ═══ BODY: TOC + MAIN ═══ -->
+  <div class="cs-body-wrapper">
+    <div class="cs-body">
+
+      <!-- TOC Sidebar -->
+      <aside class="cs-toc" id="cs-toc">
+        <a href="#background" class="cs-toc-link" data-section="background">Background</a>
+        <a href="#define" class="cs-toc-link" data-section="define">Define</a>
+        <a href="#solution" class="cs-toc-link" data-section="solution">Solution</a>
+      </aside>
+
+      <!-- Main Content -->
+      <main class="cs-main">
+
+      <!-- ── 01. Background ── -->
+      <section id="background" class="cs-section">
+        <h2 class="cs-heading">Background</h2>
+        <div style="display: flex; flex-direction: column; gap: 24px;">
+          <div style="border-radius: var(--radius); overflow: hidden;">
+            <img src="../../Assets/Cases/lemonbox/section-1/background.png" alt="Background" style="width: 100%; display: block;">
+          </div>
+          <div style="border-radius: var(--radius); overflow: hidden;">
+            <img src="../../Assets/Cases/lemonbox/section-1/challenge.png" alt="Challenge" style="width: 100%; display: block;">
+          </div>
+        </div>
+      </section>
+
+      <!-- ── 02. Define ── -->
+      <section id="define" class="cs-section">
+        <h2 class="cs-heading">Define</h2>
+        <div style="display: flex; flex-direction: column; gap: 24px;">
+          <div style="border-radius: var(--radius); overflow: hidden; border: 1px solid var(--cs-card-border);">
+            <img src="../../Assets/Cases/lemonbox/section-2/about users.png" alt="Users Analysis" style="width: 100%; display: block;">
+          </div>
+          <div style="border-radius: var(--radius); overflow: hidden; border: 1px solid var(--cs-card-border);">
+            <img src="../../Assets/Cases/lemonbox/section-2/solution.png" alt="Problem Definition" style="width: 100%; display: block;">
+          </div>
+        </div>
+      </section>
+
+      <!-- ── 03. Solution ── -->
+      <section id="solution" class="cs-section">
+        <h2 class="cs-heading">Solution</h2>
+        <div style="display: flex; flex-direction: column; gap: 24px;">
+          <div style="border-radius: var(--radius); overflow: hidden; border: 1px solid var(--cs-card-border);">
+             <img src="../../Assets/Cases/lemonbox/section-3/solution-1.png" alt="Final Solution 1" style="width:100%; display:block;">
+          </div>
+          <div style="border-radius: var(--radius); overflow: hidden; border: 1px solid var(--cs-card-border);">
+             <img src="../../Assets/Cases/lemonbox/section-3/solution-2.png" alt="Final Solution 2" style="width:100%; display:block;">
+          </div>
+        </div>
+
+        <!-- Impact Section -->
+        <div style="margin-top: 48px; max-width: 800px;">
+          <h4 class="cs-brief-label" style="margin-bottom: 24px;">🎉 Impact & Moving forward</h4>
+          <div style="display: flex; flex-direction: column; gap: 24px;">
+             <h3 class="cs-heading" style="line-height: 1.2;">Achieved +8% conversion rate uplift in the month after launch</h3>
+             <p class="cs-desc" style="max-width: 100%;">
+               I’m glad the redesign attracted more users to complete the questionnaire and subscribe. Next, I’d focus on bridging the physical product with the mini-program, encouraging authentic post-purchase sharing to inspire new users.
+             </p>
+          </div>
+        </div>
+      </section>
+
+      </main>
+    </div>
+  </div>
+</div>
+
+<script src="../../Assets/system/js/global-ui.js"></script>
+<script>
+  (function() {
+    const tocLinks = document.querySelectorAll('.cs-toc-link');
+    const sections = document.querySelectorAll('.cs-main section[id]');
+
+    function updateActive() {
+      let currentId = '';
+      sections.forEach(section => {
+        if (window.scrollY >= section.offsetTop - 160) {
+          currentId = section.id;
+        }
+      });
+      tocLinks.forEach(link => {
+        link.classList.toggle('active', link.dataset.section === currentId);
+      });
+    }
+
+    window.addEventListener('scroll', updateActive, { passive: true });
+    updateActive();
+  })();
+</script>
+</body>
+</html>

@@ -1,0 +1,130 @@
+- ID: PLAN-20260403-005
+- Status: Done
+- Date: 2026-04-03
+- Summary: Lemonbox 案例填充与全局圆角、Header 细节精修
+- Impact: `work/lemonbox/index.html`, `css/tokens.css`, `index.html`
+- Changes:
+    - [Global] 强制在 tokens.css 中声明 --radius: 16px，各主页 style 也同步补齐。
+    - [Home] 移除项目封面容器的背景色 (background: transparent)。
+    - [Lemonbox] 填充 B2C 案例内容，右侧滚动区改为纯图片展示（移除文字描述）。
+    - [Lemonbox] 将 Impact 模块改为灰色卡片样式，对齐 Paper 风格。
+- Verify:
+    - 视觉验证：Lemonbox 页面右侧无冗余文字，只有图片。
+    - 视觉验证：Lemonbox 结尾 Impact 卡片为浅灰色。
+    - 视觉验证：首页封面图无黑色底框。
+- Rollback:
+    - 恢复 tokens.css 和 index.html 的背景色定义。
+
+- ID: PLAN-20260403-004
+- Status: Done
+- Date: 2026-04-03
+- Summary: 全局设计精修：Header 调整、16px 圆角恢复、新建 design workflow、TOC 对齐
+- Impact: 全站所有页面、CSS Token、Agent Workflow
+- Changes:
+    - [Global] 在 tokens.css 中定义 --radius: 16px 并全局应用。
+    - [Global] 精修 Header：移除分割线，减少间距，对齐 Logo 和猫咪高度 (26px)。
+    - [Case Study] 调整 TOC (Outline) 上边距为 64px，使其与正文顶部对齐。
+    - [Ode Paper] 应用 refined 字体阶梯和全新的白色通栏背景结构。
+    - [Workflow] 新建 .agent/workflows/design.md，注入高标准前端设计原则。
+- Verify:
+    - 视觉验证：Header 无分割线，内容对开对齐。
+    - 视觉验证：所有卡片和图片圆角统一为 16px。
+    - 逻辑验证：/design 命令生效。
+- Rollback:
+    - 修改 CSS 变量 --radius 为 0 即可快速回滚圆角。
+    - 从 global-ui.css 恢复 border-bottom。
+
+- ID: PLAN-20260403-003
+- Status: Done
+- Date: 2026-04-03
+- Summary: 全面重写 ODE Paper 页面，还原原版视觉、接入全局 Nav/Footer、新增 sticky TOC 侧边栏
+- Impact: `work/ode-paper/index.html`, `Assets/js/global-ui.js`
+- Changes:
+    - Changed: 以 GitHub 原版 React+Tailwind 源码为蓝本，完整重写 `work/ode-paper/index.html`。还原了交替白色 section 背景、`#FAFAFA` 卡片配色、SVG 图标（layers/code/bar-chart）、AI callout 的渐变装饰光晕和双 Logo 叠放卡片。
+    - Changed: 全部 `border-radius` 设为 `0`，字体统一使用 DS 的 `IBM Plex Mono`。
+    - Added: 适配了完整 Dark Mode，为页面定义了 11 个 `--cs-*` 级联变量，在 `[data-theme="dark"]` 下映射到深色等价值。
+    - Added: 新增 Sticky TOC 侧边栏（左侧 160px 列），带 ScrollSpy 自动高亮当前 section，点击可平滑跳转。采用 Playground Filter 风格（dotted 左边框、mono 小字）。
+    - Fixed: `global-ui.js` 的 `pathLevel` 路径检测逻辑从硬编码 `'../'` 改为动态计算目录深度 `'../'.repeat(depth)`，修复了嵌套子页面（如 `work/ode-paper/`）的 logo 和 nav 链接路径错误。
+    - Added: `<head>` 内加入 FOUC 防闪脚本，在 DOM 解析前立即设置 `data-theme`。
+- Verify:
+    - 浏览器验证：全局 Header/Footer 正常渲染，TOC 左侧固定并跟随滚动高亮，5 个 section 内容完整，SVG 图标和 Logo 卡片可见，Light/Dark 模式切换正常。
+- Rollback:
+    - 还原 `work/ode-paper/index.html` 到上一版本（274 行），撤销 `global-ui.js` 的 pathLevel 改动。
+
+- Status: Done
+- Date: 2026-04-03
+- Summary: 修复底部排版空隙及样式，修补 Ode Paper 的热区跳链冲突
+- Impact: `index.html`, `Assets/js/global-ui.js`
+- Changes:
+    - Changed: `global-ui.js` 移除了 `footer-top` 中 `Let's connect` 下方的海量原版间距（从 `80px` 骤减至 `24px`）。
+    - Changed: 将底部的纯文本时钟及状态行套上了设计系统中的 Pill 样式预设，现在具有 `border` 和药丸形状圆角，整体被精选为精致组件。
+    - Fixed: 清除了此前给各个卡片注入 `a` 平铺盖印代码时的串门问题，现在只属于 Ode-paper 的 `work/ode-paper/index.html` 被完美绝对定位在卡片之上，点击完全生效。
+
+- ID: PLAN-20260403-001
+- Status: Done
+- Date: 2026-04-03
+- Summary: 修改 Token 文案、修复链接、Playground 精简、全局移除卡片圆角，重构 Footer Button/时钟动态面板
+- Impact: `index.html`, `playground/index.html`, `global-ui.js`
+- Changes:
+    - Changed: `index.html` 移除全部项目卡片图片与 `tag` 的 `border-radius: 5px/3px` 变为完全直角 `0`。
+    - Changed: 修正首页最后一句 Token 内容为 `—to write and iterate inside workflows`。
+    - Changed: Playground 移除全局 Filter 数字角标、移除顶部 `ALL` 选项筛子以及所有的左侧面板元素精简，移除卡版圆角。
+    - Fixed: 使用伪元素重构了 `project-item` 的整体点击范围，修正了由于单独挂在 arrow 导致 ode-paper 等页面无法随意点击跳转的交互错误。
+    - Changed: 深度重塑了 Global UI 的 Footer 视觉组件。右下角更换为高对比滑出反相按钮 `Let's connect`，采用设计系统颜色变换和机械曲线。下方建立了一条带脉冲呼吸灯、并能1秒一更实时本地时间附带当前时段状态（白昼与黑夜数组）的工作台时钟。
+- Verify:
+    - Footer 是否平滑地被黑色盖印且时钟时间不报错且每一秒更新。
+- Rollback:
+    - 撤销 `global-ui.js` 的 `footerStyles` 及相关时间初始化函数。
+
+- ID: PLAN-20260402-003
+- Status: Done
+- Date: 2026-04-02
+- Summary: 修复 Token 文字样式、Dark Mode 中括号保留及框线距离对齐问题
+- Impact: `index.html`, `playground/index.html`, `global-ui.js`
+- Changes:
+    - Changed: 将 Token 内文字取消加粗，圆角改为0。
+    - Changed: 统一部署 `.frame` 的 inset 属性，修复两个页面深色模式框线边距不同的现象。
+    - Changed: 深色模式维持 `[]` 括号渲染，杜绝宽度变化跳动。
+    - Fixed: 修正 `t-exp` 展开文案末尾字体裁剪溢出问题。
+- Verify:
+    - 验证 Token 展开时最后右侧一个字是否被修剪（Italic 溢出是否正常）。
+    - 验证切换模式前后，中括号宽度是否稳健不动。
+- Rollback:
+    - 还原 `index.html` 的 CSS 设定。
+
+- ID: PLAN-20260402-001
+- Status: Done
+- Date: 2026-04-02
+- Summary: 细化Home/Playground的UX交互并优化Nav样式的设计对齐
+- Impact: `index.html`, `playground/index.html`, `Assets/js/global-ui.js`
+- Changes:
+    - Changed: `t-exp` 展开文案对齐问题修复，且使用 `inline-flex` 防止基线下沉。
+    - Changed: Token 交互改为点击任意一项均各自独立展开，不再排他回缩。
+    - Changed: Emoji (.projectile) 放大至 56px。
+    - Changed: Home 页面 `.hero` 容器不再强制占据满屏，而是使用恰当的上下 padding 使页面内容自然呈现。
+    - Changed: 将全局 Nav Bar 及 Footer 字号放大一档至 `13px`。
+    - Changed: 右上角 Theme Toggle 按钮替换为猫咪图标，根据设计要求严格使用原 btn-darkswitch.svg。并应用 `currentColor` 处理。
+    - Changed: 左上角站口 `ruini.site / 2025` 文本切换为 `logo.svg` 图片，统一设定与猫咪图标等高。
+- Verify:
+    - 切换暗黑模式确认猫咪是否自动反相，Hover 时是否变为蓝色/白色的高亮 `Accent`。
+    - 检查左侧 logo 宽高比及反相变化。
+- Rollback:
+    - 还原 `index.html` 以及 `global-ui.js` 至前一版本的 git 提交记录。
+
+- ID: PLAN-20260402-002
+- Status: Done
+- Date: 2026-04-02
+- Summary: 修复 Token 交互与深色模式显示限制，同步 Playground 容器规范
+- Impact: `index.html`, `playground/index.html`, `global-ui.js`
+- Changes:
+    - Fixed: 移除 `index.html` inline script 里的过期逻辑导致 Token 点击失效的致命错误。
+    - Changed: `[--]` -> `[]`。针对深色模式 `.t-bl` 设置为不填充占位符，保持两侧统一为空或只留原本的括号设计。
+    - Changed: 全局配置修正，由于此前移除了 `<span id="theme-label">` 和原有文字，恢复了最上方 `<head>` 的无闪烁 localStorage 初始化逻辑。
+    - Changed: 将 Playground 的左右 padding 由 `28px 40px` 修改为 `40px 80px` 与 Home 页面完全强制保持一致。
+    - Changed: 为导航栏 `Work` 路径绑定真正的跳转链接 `work/index.html` 。
+    - Changed: Theme 猫咪按钮 Hover 态变为使用深色与浅色通用的 `.text-secondary`（#6B7280/RGBA灰）。
+- Verify:
+    - Token 在主页能否正常随意点击展开。
+    - Playground 的 PC 与手机端（小于960/640）边距是否和主页完全一致。
+- Rollback:
+    - 撤销 `index.html` 及 `global-ui.js` 对 theme 脚本初始化的变更。
