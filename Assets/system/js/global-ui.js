@@ -1,10 +1,8 @@
 document.addEventListener('DOMContentLoaded', () => {
-  const pathname = window.location.pathname;
-  const lastPart = pathname.split('/').pop();
-  const isDirPath = pathname.endsWith('/') || !lastPart.includes('.');
-  const pathParts = pathname.split('/').filter(Boolean);
-  if (!isDirPath) pathParts.pop(); 
-  const pathLevel = pathParts.length === 0 ? './' : '../'.repeat(pathParts.length);
+  // Robust path calculation based on script source location
+  const scriptTag = document.currentScript || Array.from(document.getElementsByTagName('script')).find(s => s.src.includes('global-ui.js'));
+  const scriptSrc = scriptTag ? scriptTag.getAttribute('src') : '';
+  const pathLevel = scriptSrc.replace('Assets/system/js/global-ui.js', '');
   
   // Create Header
   const header = document.createElement('header');
