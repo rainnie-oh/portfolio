@@ -186,9 +186,64 @@ nav a:hover, nav a.active {
 .footer-links a:hover {
   color: var(--text-primary);
 }
-@media(max-width: 640px) {
+@media(max-width: 768px) {
+  header {
+    padding-top: 8px;
+    padding-bottom: 8px;
+  }
+  .logo-img {
+    height: 20px;
+  }
+  .header-right {
+    gap: 16px;
+  }
+  nav {
+    gap: 14px;
+  }
+  nav a {
+    font-size: 11px;
+    letter-spacing: .04em;
+  }
+  .cat-icon {
+    height: 20px;
+  }
+  .theme-btn {
+    padding: 6px;
+  }
+  .global-footer {
+    padding: 40px 0 28px;
+    margin-top: 48px;
+  }
+  .footer-top {
+    margin-bottom: 16px;
+  }
+  .footer-connect {
+    font-size: clamp(20px, 5vw, 28px);
+  }
+  .footer-status-line {
+    font-size: 8px;
+    padding: 4px 10px;
+    gap: 6px;
+  }
   .footer-bottom {
     flex-direction: column;
     align-items: flex-start;
+    font-size: 11px;
+    gap: 16px;
+  }
+  .footer-links {
+    gap: 16px;
+  }
+}
+
+@media(max-width: 420px) {
+  nav {
+    gap: 10px;
+  }
+  nav a {
+    font-size: 10px;
+  }
+  .header-right {
+    gap: 10px;
   }
 }
