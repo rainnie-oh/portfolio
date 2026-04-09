@@ -13,7 +13,7 @@
   --radius: 16px;
 }
 [data-theme="light"], :root {
-  --bg: #F6F7F9; --bg-dot: #E5E7EB;
+  --bg: #F6F7F9; --bg-dot: rgba(0, 0, 0, 0.035);
   --text-primary: #111318; --text-secondary: #6B7280;
   --border: #E5E7EB; --border-hover: #9CA3AF;
   --token-bg: rgba(17,19,24,0.04); --token-hover: rgba(17,19,24,0.08);
