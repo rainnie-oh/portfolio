@@ -15,7 +15,7 @@ document.addEventListener('DOMContentLoaded', () => {
 
   header.innerHTML = `
     <a href="${pathLevel}index.html" class="header-logo-link">
-      <img src="${pathLevel}Assets/system/brand/logo.svg" alt="ruini.site" class="logo-img">
+      <img src="${pathLevel}Assets/system/brand/logo.svg" alt="ruini.site" class="logo-img" style="height: 26px; width: auto; display: block;">
     </a>
     <div class="header-right">
       <nav>

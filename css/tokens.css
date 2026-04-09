@@ -1,3 +1,10 @@
+@font-face {
+  font-family: 'Departure Mono';
+  src: url('../Assets/system/fonts/DepartureMono-Regular.woff2') format('woff2');
+  font-weight: 400;
+  font-style: normal;
+}
+
 :root {
   --font: 'IBM Plex Mono', monospace;
   --ease-spring: cubic-bezier(0.22, 1, 0.36, 1);
